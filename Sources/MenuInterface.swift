@@ -3,11 +3,15 @@
 import Foundation
 
 
+/// Defines the means for a menu to interact with a user. (The "user" might be an automated test, instead of a person.)
+
 public protocol MenuInterface {
     
     func read() -> String
+    
     func write(_ output: String)
 }
+
 
 extension MenuInterface {
     
@@ -45,4 +49,22 @@ public class TestMenuInterface: MenuInterface {
     public var outputText: String {
         return self.outputs.joined(separator: "")
     }
+}
+
+
+/// The simplest possible actual menu interface.
+
+public class DefaultMenuInterface: MenuInterface {
+    
+    public func read() -> String {
+        guard let result = readLine() else {
+            return "poo"
+        }
+        return result
+    }
+    
+    public func write(_ output: String) {
+        print(output)
+    }
+
 }
