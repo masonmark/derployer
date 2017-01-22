@@ -12,4 +12,18 @@ public class MenuItem {
         self.name  = name;
         self.value = value;
     }
+    
+    public func run(interface: MenuInterface) {
+        let displayValue = value ?? "<not set>"
+        let prompt = "\(name): \(displayValue). Press ↩︎ to accept, or else enter a new value.\n"
+        interface.write(prompt)
+        let input = interface.read()
+        
+        if input == "" {
+            interface.write("No change made.\n\n")
+        } else {
+            value = input
+            interface.write("New value for \(name): \(value)\n\n")
+        }
+    }
 }

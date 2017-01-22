@@ -37,7 +37,7 @@ public class TestMenuInterface: MenuInterface {
     
     public func read() -> String {
         guard self.inputs.count > 0 else {
-            return "error: \(self) has no more inputs to read"
+            return ""
         }
         return self.inputs.remove(at: 0)
     }
