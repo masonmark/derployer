@@ -3,6 +3,8 @@
 import XCTest
 @testable import Derployer
 
+import Foundation // for String's hasPrefix() and contains()
+
 class MenuTests: XCTestCase {
     
     let menu          = Menu(title: "TEST MENU")

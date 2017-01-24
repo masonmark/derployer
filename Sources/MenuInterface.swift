@@ -1,7 +1,5 @@
 // MenuInterface.swift Created by mason on 2017-01-20. 
 
-import Foundation
-
 
 /// Defines the means for a menu to interact with a user. (The "user" might be an automated test, instead of a person.)
 

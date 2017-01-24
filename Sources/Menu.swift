@@ -1,6 +1,5 @@
 // Menu.swift Created by mason on 2017-01-20.
 
-import Foundation
 
 public class Menu {
     
