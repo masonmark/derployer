@@ -50,11 +50,7 @@ class MenuTests: XCTestCase {
             "Choose from menu, or press ↩︎ to accept current values:",
             "",
             ">"
-        ].joined(separator: "\n")
-
-        let fagous = menuInterface.outputText
-        print(fagous)
-        
+        ].joined(separator: "\n")        
         
         XCTAssert(menuInterface.outputText.contains(expected), "menu didn't display edited values ")
     }
@@ -89,14 +85,30 @@ class MenuTests: XCTestCase {
 
     }
     
-//    func test_manual() {
-//        menu.content = [
-//            MenuItem("foo", value: "bar"),
-//            MenuItem("baz", value: "ホゲ"),
-//            MenuItem("Roscoe _ Coltrain", value: "P.")
-//        ]
-//        menu.interface = DefaultMenuInterface()
-//        menu.run()
-//        print(menu.values())
-//    }
+    /// This test can't easily be automated. Uncomment to try it manually:
+    func test_manual() {
+    //        menu.content = [
+    //            MenuItem("foo", value: "bar"),
+    //            MenuItem("baz", value: "ホゲ"),
+    //            MenuItem("Roscoe _ Coltrain", value: "P.")
+    //        ]
+    //        menu.interface = DefaultMenuInterface()
+    //        menu.run()
+    //        print(menu.values())
+    }
+
+}
+
+
+extension MenuTests {
+    
+    static var allTests : [(String, (MenuTests) -> () throws -> Void)] {
+        return [
+            ("test_basic_presentation", test_basic_presentation),
+            ("test_edit_values", test_edit_values),
+            ("test_manage_values", test_manage_values),
+            ("test_subscript", test_subscript),
+            ("test_manual", test_manual),
+        ]
+    }
 }

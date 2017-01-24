@@ -22,3 +22,13 @@ class DefaultMenuFormatterTests: XCTestCase {
         
     }
 }
+
+
+extension DefaultMenuFormatterTests {
+    
+    static var allTests : [(String, (DefaultMenuFormatterTests) -> () throws -> Void)] {
+        return [
+            ("test_format_title", DefaultMenuFormatterTests.test_format_title),
+        ]
+    }
+}

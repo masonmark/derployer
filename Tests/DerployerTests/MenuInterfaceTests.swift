@@ -18,11 +18,22 @@ class MenuInterfaceTests: XCTestCase {
         XCTAssertEqual(mi.outputText, "fyou")
     }
     
-    // This test can't easily be automated:
-    //    func test_DefaultMenuInterface() {
-    //        let mi = DefaultMenuInterface()
-    //        mi.write("hello")
-    //        let reply = mi.read()
-    //        XCTAssertEqual(reply, "hi");
-    //    }
+    /// This test can't easily be automated. Uncomment to try it manually:
+    func test_DefaultMenuInterface() {
+    //            let mi = DefaultMenuInterface()
+    //            mi.write("hello")
+    //            let reply = mi.read()
+    //            XCTAssertEqual(reply, "hi");
+    }
+}
+
+
+extension MenuInterfaceTests {
+    
+    static var allTests : [(String, (MenuInterfaceTests) -> () throws -> Void)] {
+        return [
+            ("test_TestMenuInterface", MenuInterfaceTests.test_TestMenuInterface),
+            ("test_DefaultMenuInterface", MenuInterfaceTests.test_DefaultMenuInterface),
+        ]
+    }
 }
