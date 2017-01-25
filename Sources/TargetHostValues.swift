@@ -44,4 +44,12 @@ public class TargetHostValues: ValueList {
         
         self.init(values: values)
     }
+    
+    
+    public static var defaults: TargetHostValues {
+        
+        return TargetHostValues(
+            hostname: "127.0.0.1", username: "ubuntu", sshPort: "22", sshKeyPath: "~/.ssh/path_to_key_file"
+        )
+    }
 }
