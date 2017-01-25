@@ -55,8 +55,8 @@ class SettingsTests: XCTestCase {
 
         XCTAssertEqual(settings.targetHostValues.hostname, "127.0.0.1")
         XCTAssertEqual(settings.targetHostValues.username, "ubuntu")
-        XCTAssertEqual(settings.targetHostValues.sshKeyPath, "22")
-        XCTAssertEqual(settings.targetHostValues.sshPort, "~/.ssh/path_to_key_file")
+        XCTAssertEqual(settings.targetHostValues.sshKeyPath, "~/.ssh/path_to_key_file")
+        XCTAssertEqual(settings.targetHostValues.sshPort, "22")
         
         
         settings.targetHostValues.hostname   = "host1.bro"
