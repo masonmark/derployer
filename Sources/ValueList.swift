@@ -31,7 +31,7 @@ extension ValueList {
         guard let obj = try? JSONSerialization.jsonObject(with: json, options: []) else {
             return nil
         }
-        guard let dict = obj as? [String:String] else {
+        guard let dict = obj as? [String:Any] else {
             return nil
         }
         self.init(values: dict)
