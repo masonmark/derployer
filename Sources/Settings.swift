@@ -79,8 +79,8 @@ class Settings: ValueList {
     convenience init(defaultsWithIdentifier identifier: String) {
         let defaultValues: [String : Any] = [
             kIdentifier       : identifier,
-            kTargetHostValues : TargetHostValues().values,
-            kDeployValues     : DeployValues().values,
+            kTargetHostValues : TargetHostValues.defaults.values,
+            kDeployValues     : DeployValues.defaults.values,
         ]
         self.init(values: defaultValues)
         self.identifier = identifier

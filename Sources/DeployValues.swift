@@ -12,5 +12,18 @@ public class DeployValues: SimpleValueList {
         self.values = values
     }
     
+    
+    /// Defaults don't really make sense for deploy values (at least currently). So these are mainly for tests.
+    
+    public static var defaults: DeployValues {
+        
+        let defaultValues = [
+            "java"   : "true",
+            "scala"  : "true",
+            "docker" : "true",
+            "swift"  : "true"
+        ]
+        return DeployValues(values: defaultValues)
+    }
 
 }
