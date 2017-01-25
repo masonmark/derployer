@@ -3,7 +3,7 @@
 import XCTest
 @testable import Derployer
 
-class TargetHostValuesTest: XCTestCase {
+class TargetHostValuesTests: XCTestCase {
     
     func test_basic() {
         
@@ -22,5 +22,14 @@ class TargetHostValuesTest: XCTestCase {
         XCTAssertEqual(t2.hostname, "new.hostname")
         t2.username = "new user name bro"
         XCTAssertEqual(t2["username"] as? String, "new user name bro")
+    }
+}
+
+extension TargetHostValuesTests {
+    
+    static var allTests : [(String, (TargetHostValuesTests) -> () throws -> Void)] {
+        return [
+            ("test_basic", test_basic),
+        ]
     }
 }
