@@ -8,4 +8,5 @@ XCTMain([
     testCase(MenuTests.allTests),
     testCase(MenuInterfaceTests.allTests),
     testCase(DefaultMenuFormatterTests.allTests),
+    testCase(TaskWrapperTests.allTests),
 ])
