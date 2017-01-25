@@ -75,3 +75,24 @@ public class Menu {
     }
     
 }
+
+
+extension Menu {
+    
+    convenience init(targetHostValues: TargetHostValues) {
+    
+        self.init()
+        self.title = "TARGET HOST VALUES:"
+        
+        self.headers = [
+            "The target host values specify the machine to be configured."
+        ]
+        
+        self.content = [
+            MenuItem("hostname", value: targetHostValues.hostname),
+            MenuItem("sshPort", value: targetHostValues.sshPort),
+            MenuItem("username", value: targetHostValues.username),
+            MenuItem("sshKeyPath", value: targetHostValues.sshKeyPath),
+        ]
+    }
+}
