@@ -9,4 +9,5 @@ XCTMain([
     testCase(MenuInterfaceTests.allTests),
     testCase(DefaultMenuFormatterTests.allTests),
     testCase(TaskWrapperTests.allTests),
+    testCase(ValueListTests.allTests),
 ])
