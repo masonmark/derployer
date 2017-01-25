@@ -7,4 +7,10 @@ import Foundation
 
 public class DeployValues: SimpleValueList {
     
+    convenience init(values: [String:Any]) {
+        self.init()
+        self.values = values
+    }
+    
+
 }
