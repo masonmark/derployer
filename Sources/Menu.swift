@@ -5,9 +5,13 @@ public class Menu {
     
     public var title: String? = nil
     
+    public var headers: [String] = []
+    
+    public var footers: [String] = []
+    
     public var content: [MenuItem] = []
     
-    public var interface: MenuInterface = TestMenuInterface()
+    public var interface: MenuInterface = DefaultMenuInterface()
     
     public var formatter: MenuFormatter = DefaultMenuFormatter()
     
@@ -22,8 +26,19 @@ public class Menu {
         if let title = title {
             interface.write(formatter.title(title))
         }
+        
+        for header in headers {
+            interface.write(formatter.header(header))
+        }
+        
         interface.write(formatter.content(content))
+        
+        for footer in footers {
+            interface.write(formatter.footer(footer))
+        }
+        
         interface.write("Choose from menu, or press ↩︎ to accept current values:\n\n>", terminator: "")
+        // FIXME: above should be configurable footer
         
         let input = interface.read()
         
