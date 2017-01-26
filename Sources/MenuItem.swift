@@ -1,4 +1,4 @@
-// MenuItem.swift Created by mason on 2017-01-20. 
+// MenuItem.swift Created by mason on 2017-01-20.
 
 public class MenuItem {
     
@@ -21,7 +21,7 @@ public class MenuItem {
             interface.write("No change made.\n\n")
         } else {
             value = input
-            interface.write("New value for \(name): \(value)\n\n")
+            interface.write("New value for \(name): \(input)\n\n")
         }
     }
 }
