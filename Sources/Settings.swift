@@ -108,7 +108,17 @@ class Settings: ValueList {
     /// Write the settings list to `path`, or to the default settings path if `path` is nil. Overwrites any existing file.
     
     public func write(path: String? = nil) {
-        write(path: path ?? settingsPath)
+        
+        let path   = path ?? settingsPath
+        let child  = NSString(string: path)
+        let parent = child.deletingLastPathComponent
+        
+        do {
+            try FileManager.default.createDirectory(atPath: parent, withIntermediateDirectories: true)
+        } catch {
+            fatalError("\(self): could not create directory at '\(parent)': \(error)")
+        }
+        write(path: path)
     }
     
     

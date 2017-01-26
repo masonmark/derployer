@@ -10,11 +10,7 @@ class SettingsTests: XCTestCase {
     
     override func setUp() {
         
-        let savePath = "/tmp/com.masonmark.derployer.tests.Settings-Default-OutputDir"
-        let result   = TaskWrapper.run("/bin/mkdir", arguments: ["-p", savePath])
-        XCTAssertEqual(result.terminationStatus, 0)
-        
-        Settings.pathToDefaultPersistenceLocation = savePath
+        Settings.pathToDefaultPersistenceLocation = "/tmp/com.masonmark.derployer.tests/SettingsTests"
     }
     
     
