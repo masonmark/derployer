@@ -98,6 +98,13 @@ class MenuTests: XCTestCase {
     //        menu.run()
     //        print(menu.values())
     }
+    
+    func test_init_from_DeployValues() {
+        let deployValues = DeployValues(values: ["foo" : "bar", "hoge" : "hoge"])
+        let menu = Menu(deployValues: deployValues)
+        
+        XCTAssert(menu.content.count == 2);
+    }
 
 }
 
@@ -111,6 +118,7 @@ extension MenuTests {
             ("test_manage_values", test_manage_values),
             ("test_subscript", test_subscript),
             ("test_manual", test_manual),
+            ("test_init_from_DeployValues", test_init_from_DeployValues)
         ]
     }
 }
