@@ -16,7 +16,7 @@ public class Menu {
     public var formatter: MenuFormatter = DefaultMenuFormatter()
     
     
-    init(title: String? = nil) {
+    public init(title: String? = nil) {
         self.title = title
     }
     
@@ -79,7 +79,9 @@ public class Menu {
 
 extension Menu {
     
-    convenience init(targetHostValues: TargetHostValues) {
+    /// Initializes a Menu instance from a TargetHostValues instance.
+    
+    public convenience init(targetHostValues: TargetHostValues) {
     
         self.init()
         self.title = "TARGET HOST VALUES:"
@@ -94,5 +96,32 @@ extension Menu {
             MenuItem("username", value: targetHostValues.username),
             MenuItem("sshKeyPath", value: targetHostValues.sshKeyPath),
         ]
+    }
+}
+
+
+extension Menu {
+    
+    /// Initializes a Menu instance from a TargetHostValues instance.
+    
+    public convenience init(deployValues: DeployValues) {
+        
+        self.init()
+        self.title = "DEPLOY VALUES:" // FIXME: give DeployValues a name property, then use it here.
+        
+        self.headers = [
+            "Edit the deploy values to control how the target machine is configured."
+        ]
+        
+        var menuItems: [MenuItem] = []
+        
+        for (key, value) in deployValues.values {
+            // Someday these really will be DerpVal instances, a la the original Derployer from the Ruby mason.gem. For now they are just key value pairs from a [String:Any] dict.
+            
+            let item = MenuItem(key, value: String(describing: value))
+            menuItems.append(item)
+            
+        }
+        self.content = menuItems
     }
 }
