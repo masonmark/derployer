@@ -7,6 +7,7 @@ XCTMain([
     testCase(DefaultMenuFormatterTests.allTests),
     testCase(DeployValuesTests.allTests),
     testCase(DerployerTests.allTests),
+    testCase(DerpSerializableTests.allTests),
     testCase(MenuInterfaceTests.allTests),
     testCase(MenuTests.allTests),
     testCase(TaskWrapperTests.allTests),
