@@ -10,15 +10,13 @@ private final class 💩: DerpSerializable {
     var state = "happy"
     var color = "brown"
     
-    var serializationValues: DerpSerializationValues {
-        
-        get {
-            return ["state": state, "color": color]
-        }
-        set {
-            state = newValue["state"] as? String ?? state
-            color = newValue["color"] as? String ?? color
-        }
+    func serialize() throws -> DerpSerializationValues {
+        return ["state": state, "color": color]
+    }
+    
+    func deserialize(_ values: DerpSerializationValues) throws {
+        state = values["state"] as? String ?? state
+        color = values["color"] as? String ?? color
     }
 }
 
