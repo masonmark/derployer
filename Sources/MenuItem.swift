@@ -7,11 +7,13 @@ public class MenuItem {
     public var name: String
     
     public init(_ name: String, value: String? = nil) {
+        
         self.name  = name;
         self.value = value;
     }
     
     public func run(interface: MenuInterface) {
+        
         let displayValue = value ?? "<not set>"
         let prompt = "\(name): \(displayValue). Press ↩︎ to accept, or else enter a new value.\n"
         interface.write(prompt)

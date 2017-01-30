@@ -18,7 +18,7 @@ class MenuTests: XCTestCase {
         ]
         menu.interface = menuInterface
         
-        menu.run()
+        _ = menu.run()
         
         let expected = [
             "=====  TEST MENU  ==========================================================================",
@@ -57,6 +57,7 @@ class MenuTests: XCTestCase {
         XCTAssert(menuInterface.outputText.contains(expected), "menu didn't display edited values ")
     }
     
+    
     func test_manage_values() {
         
         test_edit_values()
@@ -66,7 +67,7 @@ class MenuTests: XCTestCase {
             "baz" : "💩"
         ]
         
-        XCTAssertEqual(expected, menu.values())
+        XCTAssertEqual(expected, menu.values)
         
     }
     
@@ -100,10 +101,30 @@ class MenuTests: XCTestCase {
     }
     
     func test_init_from_DeployValues() {
-        let deployValues = DeployValues(values: ["foo" : "bar", "hoge" : "hoge"])
-        let menu = Menu(deployValues: deployValues)
+        
+        let values = [
+            DerpVal("foo", value: "bar"),
+            DerpVal("hoge", value: "hoge"),
+        ]
+        let deployValues = DerpValList(values)
+        
+        let menu = Menu(list: deployValues)
         
         XCTAssert(menu.content.count == 2);
+        XCTAssert(menu.content[safe: 0]?.value == "bar");
+        XCTAssert(menu.content[safe: 1]?.value == "hoge");
+        
+        menu.interface = TestMenuInterface(inputs: ["1", "ass", "2", "hat", ""])
+        guard let result = menu.run() as? [String:String]  else {
+            // no custom return type for this case
+            XCTFail("bad return value type");
+            return;
+        }
+        print(result)
+        
+        XCTAssert(result["foo"]  == "ass")
+        XCTAssert(result["hoge"] == "hat")
+        
     }
 
 }

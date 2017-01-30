@@ -1,15 +1,21 @@
 // Menu.swift Created by mason on 2017-01-20.
 
 
+/// Menu manages a collection of values, presenting a text UI and running a user input loop until the user accepts the results. Menus are configured, then executed with `run()`, which returns the menu's result. 
+///
+/// Simple named-value lists can be managed by default, and Menu can be extended (via custom initializers and custom MenuResultBuilder closures) to manage other kinds of data.
+
 public class Menu {
     
     public var title: String? = nil
     
     public var headers: [String] = []
     
-    public var footers: [String] = []
-    
     public var content: [MenuItem] = []
+    
+    public var footers: [String] = []
+
+    public var prompt: String? = nil
     
     public var interface: MenuInterface = DefaultMenuInterface()
     
@@ -20,8 +26,10 @@ public class Menu {
         self.title = title
     }
     
+   
+    /// Returns the result of running the menu. Running the menu means presenting its contents via the menu interface (normally, to allow editing), repeating in a loop, until complete.
     
-    public func run() {
+    public func run() -> Any? {
         
         if let title = title {
             interface.write(formatter.title(title))
@@ -37,23 +45,41 @@ public class Menu {
             interface.write(formatter.footer(footer))
         }
         
-        interface.write("Choose from menu, or press ↩︎ to accept current values:\n\n>", terminator: "")
-        // FIXME: above should be configurable footer
+        interface.write(formatter.prompt(prompt ?? defaultPrompt))
+
         
         let input = interface.read()
         
         if input == "" {
-            return
+            return menuResult
         } else if let menuItem = self[input] {
             menuItem.run(interface:interface)
         } else {
             interface.write("Sorry, '\(input)' is not something I understand.")
         }
-        run()
+        return run()
+    }
+    
+
+    /// By default, a menu's result is just the `values` dictionary. Those are always Strings, and easy to work with. However, in some cases it's convenient to make a Menu instance smart enough to return some kind of arbitrary object. A way to do that is to set the `menuResult` property to a custom routine (and a convenient place to do that would be your custom initializer that knows how to init with that same type of object).
+
+    public var menuResult: Any? {
+        
+        if let builder = resultBuilder {
+            return builder(self)
+        } else {
+            return values
+        }
     }
     
     
-    public func values() -> [String:String] {
+    public var resultBuilder: MenuResultBuilder? = nil
+    
+ 
+    /// Returns a dictionary of named values, representing the current contents of the menu. By default, this object is the result returned by `run()` (although that can be overridden by setting the `resultBuilder` property.
+    
+    public var values: [String:String] {
+        
         var result: [String:String] = [:]
         for menuItem in content {
             result[menuItem.name] = menuItem.value
@@ -65,6 +91,7 @@ public class Menu {
     /// Returns the corresponding MenuItem instance if `selection` is a number that is one of the menu's choices, otherwise nil.
     
     public subscript(selection: String) -> MenuItem? {
+        
         guard let number = Int(selection) else {
             return nil
         }
@@ -74,7 +101,19 @@ public class Menu {
         return content[number - 1]
     }
     
+    
+    internal var defaultPrompt: String {
+        
+        return (content.count > 0)
+            ? "Choose from menu, or press ↩︎ to accept current values:\n\n>"
+            : "Press ↩︎ to continue:\n\n>"
+    }
 }
+
+
+/// Type for Menu's `resultBuilder` property; it converts a menu('s values) into some arbitrary object.
+
+public typealias MenuResultBuilder = ((Menu)->Any)
 
 
 extension Menu {
@@ -96,31 +135,33 @@ extension Menu {
             MenuItem("username", value: targetHostValues.username),
             MenuItem("sshKeyPath", value: targetHostValues.sshKeyPath),
         ]
+        
+        self.resultBuilder = { menu in
+            let v = self.values
+            return TargetHostValues(hostname: v["hostname"], username: v["username"], sshPort: v["sshPort"], sshKeyPath: v["sshKeyPath"])
+        }
     }
 }
 
 
 extension Menu {
     
-    /// Initializes a Menu instance from a TargetHostValues instance.
-    
-    public convenience init(deployValues: DeployValues) {
+    /// Initializes a Menu instance from a DerpValList instance.
+
+    public convenience init(list: DerpValList) {
         
         self.init()
-        self.title = "DEPLOY VALUES:" // FIXME: give DeployValues a name property, then use it here.
+        self.title = "DEPLOY VALUES:" // FIXME: give DerpValList a name property, then use it here.
         
         self.headers = [
             "Edit the deploy values to control how the target machine is configured."
         ]
-        
+
         var menuItems: [MenuItem] = []
         
-        for (key, value) in deployValues.values {
-            // Someday these really will be DerpVal instances, a la the original Derployer from the Ruby mason.gem. For now they are just key value pairs from a [String:Any] dict.
-            
-            let item = MenuItem(key, value: String(describing: value))
+        for dv in list.derpVals {
+            let item = MenuItem(dv.identifier, value: (dv.value as? String) ?? "")
             menuItems.append(item)
-            
         }
         self.content = menuItems
     }

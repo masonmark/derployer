@@ -9,6 +9,8 @@ public protocol MenuFormatter {
     func content(_ content:[MenuItem]) -> String
     
     func footer(_ footer: String) -> String
+    
+    func prompt(_ prompt: String) -> String
 }
 
 
@@ -57,6 +59,10 @@ public class DefaultMenuFormatter: MenuFormatter {
     
     public func footer(_ footer: String)  -> String {
         return "\(footer)\n\n"
+    }
+    
+    public func prompt(_ prompt: String) -> String {
+        return "\(prompt)"
     }
 
 }
