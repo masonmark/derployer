@@ -52,7 +52,17 @@ class DerpSerializableTests: TestCase  {
         XCTAssertEqual(obj2.state, "angry")
         XCTAssertEqual(obj2.color, "green")
     }
-}
+    
+    
+    func test_tilde_expansion_on_Linux() {
+        // Just making sure this works on Linux, too...
+        
+        let abbreviated = "~/foo" as NSString
+        let expanded    = abbreviated.expandingTildeInPath
+        XCTAssert(expanded.hasPrefix("/"))
+        XCTAssert(expanded.hasSuffix("/foo"))
+    }
+    }
 
 
 extension DerpSerializableTests {
@@ -61,6 +71,7 @@ extension DerpSerializableTests {
         return [
             ("test_JSONString", test_JSONString),
             ("test_to_from_file", test_to_from_file),
+            ("test_tilde_expansion_on_Linux", test_tilde_expansion_on_Linux),
         ]
     }
 }

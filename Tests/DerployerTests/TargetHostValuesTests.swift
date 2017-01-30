@@ -9,7 +9,7 @@ class TargetHostValuesTests: XCTestCase {
         
         let t  = TargetHostValues(hostname: "host.bro", username: "usernameBRO", sshPort: "666", sshKeyPath: "path.to.key")
         
-        guard var t2 = TargetHostValues(json: t.JSON) else {
+        guard let t2 = TargetHostValues(json: t.JSON) else {
             XCTFail("serialization failed :-/")
             return
         }
@@ -17,11 +17,6 @@ class TargetHostValuesTests: XCTestCase {
         XCTAssertEqual(t2.username, "usernameBRO")
         XCTAssertEqual(t2.sshPort, "666")
         XCTAssertEqual(t2.sshKeyPath, "path.to.key")
-        
-        t2["hostname"] = "new.hostname"
-        XCTAssertEqual(t2.hostname, "new.hostname")
-        t2.username = "new user name bro"
-        XCTAssertEqual(t2["username"] as? String, "new user name bro")
     }
 }
 

@@ -4,14 +4,14 @@ import XCTest
 @testable import DerployerTests
 
 XCTMain([
+    testCase(CoreUtilitiesTests.allTests),
     testCase(DefaultMenuFormatterTests.allTests),
-    testCase(DeployValuesTests.allTests),
     testCase(DerployerTests.allTests),
     testCase(DerpSerializableTests.allTests),
+    testCase(DerpValTests.allTests),
     testCase(MenuInterfaceTests.allTests),
     testCase(MenuTests.allTests),
     testCase(TaskWrapperTests.allTests),
     testCase(TargetHostValuesTests.allTests),
-    testCase(SettingsTests.allTests),
-    testCase(ValueListTests.allTests),
+    testCase(SampleClientTests.allTests),
 ])
