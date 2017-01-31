@@ -19,9 +19,6 @@ public class Menu {
     
     public var interface: MenuInterface = DefaultMenuInterface()
     
-    public var formatter: MenuFormatter = DefaultMenuFormatter()
-    
-    
     public init(title: String? = nil) {
         self.title = title
     }
@@ -32,20 +29,20 @@ public class Menu {
     public func run() -> Any? {
         
         if let title = title {
-            interface.write(formatter.title(title))
+            interface.writeTitle(title)
         }
         
         for header in headers {
-            interface.write(formatter.header(header))
+            interface.writeHeader(header)
         }
         
-        interface.write(formatter.content(content))
+        interface.writeContent(content)
         
         for footer in footers {
-            interface.write(formatter.footer(footer))
+            interface.writeFooter(footer)
         }
         
-        interface.write(formatter.prompt(prompt ?? defaultPrompt))
+        interface.writePrompt(prompt ?? defaultPrompt)
 
         
         let input = interface.read()

@@ -1,10 +1,8 @@
 // MenuInterface.swift Created by mason on 2017-01-20. 
 
-// FIXME: make MenuInterface provide the interface that MenuFormatter currently does. The formatter will then just be the implementation of how header() prompt() etc look. Then objects like MenuItem can use do prompts and headers as need be, without being coupled to MenuFormatter. (Currently MenuItem just writes raw-dog...)
-
 /// Defines the means for a menu to interact with a user. (The "user" might be an automated test, instead of a person.)
 
-public protocol MenuInterface {
+public protocol MenuInterface: MenuFormatter {
     
     func read() -> String
     
@@ -14,10 +12,29 @@ public protocol MenuInterface {
 
 extension MenuInterface {
     
-    func write(_ output: String, terminator: String = "\n") {
-        
-        let output = output + terminator
-        write(output)
+    public var formatter: MenuFormatter {
+        // YAGNI? custom menu formatters
+        return self
+    }
+    
+    func writeTitle(_ title: String) {
+        write(formatter.title(title))
+    }
+    
+    func writeHeader(_ header: String) {
+        write(formatter.header(header))
+    }
+
+    func writeContent(_ content:[MenuItem]) {
+        write(formatter.content(content))
+    }
+    
+    func writeFooter(_ footer: String) {
+        write(formatter.footer(footer))
+    }
+    
+    func writePrompt(_ prompt: String) {
+        write(formatter.prompt(prompt))
     }
 }
 
@@ -65,5 +82,4 @@ public class DefaultMenuInterface: MenuInterface {
     public func write(_ output: String) {
         print(output)
     }
-
 }

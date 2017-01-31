@@ -1,11 +1,15 @@
-// DefaultMenuFormatterTests.swift Created by mason on 2017-01-20. 
+// MenuFormatterTests.swift Created by mason on 2017-01-20.
 
 import XCTest
 @testable import Derployer
 
-class DefaultMenuFormatterTests: XCTestCase {
+class TestMenuFormatter: MenuFormatter {
     
-    var formatter = DefaultMenuFormatter()
+}
+
+class MenuFormatterTests: XCTestCase {
+    
+    var formatter = TestMenuFormatter()
     
     func test_format_title() {
         
@@ -24,11 +28,11 @@ class DefaultMenuFormatterTests: XCTestCase {
 }
 
 
-extension DefaultMenuFormatterTests {
+extension MenuFormatterTests {
     
-    static var allTests : [(String, (DefaultMenuFormatterTests) -> () throws -> Void)] {
+    static var allTests : [(String, (MenuFormatterTests) -> () throws -> Void)] {
         return [
-            ("test_format_title", DefaultMenuFormatterTests.test_format_title),
+            ("test_format_title", MenuFormatterTests.test_format_title),
         ]
     }
 }

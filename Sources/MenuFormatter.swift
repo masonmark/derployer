@@ -15,11 +15,13 @@ public protocol MenuFormatter {
 
 
 
-public class DefaultMenuFormatter: MenuFormatter {
+extension MenuFormatter {
     
     // Formattings things may add trailing space, but should never add leading space.
     
-    public var characterWidth = 93
+    public var characterWidth: Int {
+        return 93
+    }
     
     public func title(_ title: String) -> String{
         
@@ -39,7 +41,7 @@ public class DefaultMenuFormatter: MenuFormatter {
     }
     
     public func header(_ header: String) -> String {
-        return "\(header)\n\n"
+        return "\(header)\n"
     }
     
     public func content(_ content:[MenuItem]) -> String {

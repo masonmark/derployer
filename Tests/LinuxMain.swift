@@ -5,7 +5,7 @@ import XCTest
 
 XCTMain([
     testCase(CoreUtilitiesTests.allTests),
-    testCase(DefaultMenuFormatterTests.allTests),
+    testCase(MenuFormatterTests.allTests),
     testCase(DerployerTests.allTests),
     testCase(DerpSerializableTests.allTests),
     testCase(DerpValTests.allTests),
