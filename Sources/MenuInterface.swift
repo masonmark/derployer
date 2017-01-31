@@ -1,5 +1,6 @@
 // MenuInterface.swift Created by mason on 2017-01-20. 
 
+// FIXME: make MenuInterface provide the interface that MenuFormatter currently does. The formatter will then just be the implementation of how header() prompt() etc look. Then objects like MenuItem can use do prompts and headers as need be, without being coupled to MenuFormatter. (Currently MenuItem just writes raw-dog...)
 
 /// Defines the means for a menu to interact with a user. (The "user" might be an automated test, instead of a person.)
 

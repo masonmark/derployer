@@ -129,9 +129,16 @@ extension Menu {
             "The target host values specify the machine to be configured."
         ]
         
+        // Just for fun, I am gonna validate the SSH port here. 
+        let sshPortValidator: MenuItemValidator = { stringValue in
+            let result = Int(stringValue) != nil
+            print("SSH port validator result: \(result)")
+            return result
+        }
+        
         self.content = [
             MenuItem("hostname", value: targetHostValues.hostname),
-            MenuItem("sshPort", value: targetHostValues.sshPort),
+            MenuItem("sshPort", value: targetHostValues.sshPort, validator: sshPortValidator),
             MenuItem("username", value: targetHostValues.username),
             MenuItem("sshKeyPath", value: targetHostValues.sshKeyPath),
         ]
