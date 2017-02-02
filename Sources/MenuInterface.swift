@@ -17,6 +17,10 @@ extension MenuInterface {
         return self
     }
     
+    func writeResultsMessage(_ resultsMessage: String) {
+        write(formatter.resultsMessage(resultsMessage))
+    }
+    
     func writeTitle(_ title: String) {
         write(formatter.title(title))
     }

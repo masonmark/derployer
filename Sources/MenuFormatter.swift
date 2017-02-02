@@ -2,6 +2,8 @@
 
 public protocol MenuFormatter {
     
+    func resultsMessage(_ resultsMessage: String) -> String
+    
     func title(_ title: String) -> String
     
     func header(_ title: String) -> String
@@ -21,6 +23,11 @@ extension MenuFormatter {
     
     public var characterWidth: Int {
         return 93
+    }
+    
+    public func resultsMessage(_ resultsMessage: String) -> String {
+        
+        return resultsMessage + "\n\n"
     }
     
     public func title(_ title: String) -> String{
