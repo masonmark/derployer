@@ -7,3 +7,7 @@ let package = Package(
 package.dependencies = [
     .Package(url: "https://github.com/masonmark/Mason.swift", majorVersion: 8),
 ]
+
+package.exclude = [
+    "Whatever"
+]
