@@ -9,7 +9,13 @@ class MenuTests: XCTestCase {
     
     let menu          = Menu(title: "TEST MENU")
     let menuInterface = TestMenuInterface()
+    override func setUp() {
+        
+        super.setUp()
+        menu.interface = menuInterface
+    }
 
+    
     func test_basic_presentation() {
         
         menu.content = [
@@ -99,6 +105,33 @@ class MenuTests: XCTestCase {
     //        menu.run()
     //        print(menu.values())
     }
+    
+    
+    
+    func test_custom_menu_values() {
+        
+        menuInterface.inputs = ["ho ho ho", "yee haw", "snausages!", "fuck Trump" ]
+        
+        var i = 0;
+        
+        menu.inputHandler = {
+            
+            input, menu in
+            
+            i += 1
+            
+            if input == "snausages!" {
+                return "SUCCESS BRO"
+            } else {
+                menu.interface.writeResultsMessage("Sorry, '\(input)' is not what we're looking for.")
+                return menu.run()
+            }
+        }
+        let result = menu.run()
+        XCTAssert(result as? String == "SUCCESS BRO")
+        XCTAssertEqual(i, 3)
+    }
+    
     
     func test_init_from_DeployValues() {
         

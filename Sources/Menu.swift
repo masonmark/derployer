@@ -26,7 +26,11 @@ public class Menu {
    
     /// Returns the result of running the menu. Running the menu means presenting its contents via the menu interface (normally, to allow editing), repeating in a loop, until complete.
     
-    public func run() -> Any? {
+    public func run(resultsMessage: String? = nil) -> Any? {
+        
+        if let resultsMessage = resultsMessage {
+            interface.writeResultsMessage(resultsMessage)
+        }
         
         if let title = title {
             interface.writeTitle(title)
@@ -47,15 +51,35 @@ public class Menu {
         
         let input = interface.read()
         
-        if input == "" {
-            return menuResult
-        } else if let menuItem = self[input] {
-            menuItem.run(interface:interface)
+        if let handler = inputHandler {
+            
+            // If self.inputHandler exists, then it is solely responsible for dealing with the input, which
+            // means either returning a value, or displaying something like "sorry, try again" and running 
+            // the menu again recursively. See the else clause below for an example of what to do.
+            
+            return handler(input, self)
+        
         } else {
-            interface.write("Sorry, '\(input)' is not something I understand.")
+            
+            if input == "" {
+                
+                return menuResult
+                
+            } else if let menuItem = self[input] {
+                
+                menuItem.run(interface:interface)
+
+            } else {
+                
+                interface.write("Sorry, '\(input)' is not something I understand.")
+            }
+            return run()
         }
-        return run()
     }
+    
+    
+    public var inputHandler: MenuInputHandler? = nil
+    
     
 
     /// By default, a menu's result is just the `values` dictionary. Those are always Strings, and easy to work with. However, in some cases it's convenient to make a Menu instance smart enough to return some kind of arbitrary object. A way to do that is to set the `menuResult` property to a custom routine (and a convenient place to do that would be your custom initializer that knows how to init with that same type of object).
@@ -111,6 +135,10 @@ public class Menu {
 /// Type for Menu's `resultBuilder` property; it converts a menu('s values) into some arbitrary object.
 
 public typealias MenuResultBuilder = ((Menu)->Any)
+
+/// Type for Menu's `inputHandler` property; it takes over all input-handling responsibilities A return value of nil indicates that the menu should reject the input and run again. Any non-nil return value becomes the menu's result.
+
+public typealias MenuInputHandler = ((_ input: String, _ menu: Menu)->Any?)
 
 
 extension Menu {
