@@ -47,22 +47,39 @@ extension MenuInterface {
 
 public class TestMenuInterface: MenuInterface {
     
-    var inputs: [String]
-    var outputs: [String]
+    public var inputs: [String]
+    public var outputs: [String]
     
-    public init(inputs: [String] = [], outputs: [String] = []) {
-        self.inputs = inputs;
-        self.outputs = outputs;
+    /// If true, will print() both inputs and outputs so tests can be visually debugged.
+    public var shouldPrint: Bool = false
+    
+    public init(inputs: [String] = [], outputs: [String] = [], shouldPrint: Bool = false) {
+        
+        self.inputs      = inputs
+        self.outputs     = outputs
+        self.shouldPrint = shouldPrint
     }
     
     public func read() -> String {
+        
         guard self.inputs.count > 0 else {
+            if shouldPrint {
+                print("")
+            }
             return ""
         }
-        return self.inputs.remove(at: 0)
+        let result = self.inputs.remove(at: 0)
+        if shouldPrint {
+            print(result)
+        }
+        return result
     }
     
     public func write(_ output: String) {
+        
+        if shouldPrint {
+            print(output)
+        }
         self.outputs.append(output)
     }
     
@@ -78,7 +95,7 @@ public class DefaultMenuInterface: MenuInterface {
     
     public func read() -> String {
         guard let result = readLine() else {
-            return "poo"
+            return "EOF ︵ヽ(`Д´)ﾉ︵ NOT YET SUPPORTED" // Hmm...
         }
         return result
     }

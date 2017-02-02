@@ -8,7 +8,9 @@ import Foundation // for String's hasPrefix() and contains()
 class MenuTests: XCTestCase {
     
     let menu          = Menu(title: "TEST MENU")
-    let menuInterface = TestMenuInterface()
+    let menuInterface = TestMenuInterface(shouldPrint: true)
+    
+    
     override func setUp() {
         
         super.setUp()
@@ -46,6 +48,7 @@ class MenuTests: XCTestCase {
     func test_edit_values() {
         
         menuInterface.inputs = ["1", "#assclownPOTUS", "2", "💩"]
+        menuInterface.shouldPrint = true
         
         test_basic_presentation()
         
