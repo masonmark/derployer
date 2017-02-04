@@ -56,10 +56,9 @@ extension MenuFormatter {
         
         var result = ""
         var number = 1
-        let noValueRepresentation = ""
         
         for item in content {
-            result += "[\(number)] \(item.name): \(item.value ?? noValueRepresentation)\n"
+            result += "[\(number)] \(item.description)\n"
             number += 1
         }
         result += "\n"

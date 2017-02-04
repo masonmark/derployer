@@ -5,6 +5,10 @@ import XCTest
 
 class MenuItemTests: XCTestCase {
     
+    let bool       = MenuItem("bool", value: "true", validator: nil, type: .boolean)
+    let string     = MenuItem("string", value: "hoge", validator: nil, type: .string)
+    let predefined = MenuItem("predefined", value: "foo", validator: nil, type: .string, predefinedValues: ["foo", "bar"])
+    
     func test_validation() {
         
         let isLessThanFive: MenuItemValidator = { input in
@@ -26,6 +30,21 @@ class MenuItemTests: XCTestCase {
         XCTAssertFalse(lessThanFive.validate("#assclownPOTUS"))
         
         XCTAssertTrue(whatever.validate("#assclownPOTUS"))
+    }
+    
+    func test_formatting() {
+        
+        XCTAssertEqual(bool.description, "✓ bool")
+        XCTAssertEqual(string.description, "  string: hoge")
+        XCTAssertEqual(predefined.description, "  predefined: foo")
+        
+        bool.value = "false"
+        string.value = "j_vattrs"
+        predefined.value = "bar"
+        
+        XCTAssertEqual(bool.description, "  bool")
+        XCTAssertEqual(string.description, "  string: j_vattrs")
+        XCTAssertEqual(predefined.description, "  predefined: bar")
     }
 }
 
