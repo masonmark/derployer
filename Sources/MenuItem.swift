@@ -1,20 +1,6 @@
 // MenuItem.swift Created by mason on 2017-01-20.
 
-/*
- 
- MASON 2017-02-03: I think: MenuItem should just provide the INTERFACE OF THE MENU ITEM
- 
- it should be a protocol
- 
- there could be a concrete class maybe StringMenuItem
- 
- but then there could be a concrete class like DerpValMenuItem
- 
- MAYBE WE DONT EVEN NEED DERPVAL
- 
- 
 
-*/
 public class MenuItem {
     
     /// The name of the item (may be an identifier, should probably be unique for most use cases).
@@ -56,22 +42,23 @@ public class MenuItem {
         }
         
         let displayValue = value ?? "<not set>"
-        let prompt = "\(name): \(displayValue). Press ↩︎ to accept, or else enter a new value.\n"
+        let prompt = messageAcceptOrManuallyChangeValue(name: name, value: displayValue)
         interface.write(prompt)
         let input = interface.read()
         
         if input == "" {
         
-            interface.write("No change made.\n\n")
+            interface.write(messageNoChangeMade())
         
         } else if !validate(input) {
             
-            let warning = "⚠️  SORRY: '\(input)' is not something I understand. Please try again."
+            let warning = messageBadInputPleaseTryAgain(input: input)
             run(interface: interface, message: warning)
             
         } else {
             value = input
-            interface.write("New value for \(name): \(input)\n\n")
+            let changeMessage = messageValueChanged(name: name, newValue: input)
+            interface.write(changeMessage)
         }
     }
     
@@ -80,6 +67,26 @@ public class MenuItem {
             return true
         }
         return v(input)
+    }
+}
+
+
+extension MenuItem {
+    
+    public func messageAcceptOrManuallyChangeValue(name: String, value:String) -> String {
+        return "\(name): \(value). Press ↩︎ to accept, or else enter a new value.\n"
+    }
+    
+    public func messageBadInputPleaseTryAgain(input: String) -> String {
+        return "⚠️  SORRY: '\(input)' is not something I understand. Please try again."
+    }
+    
+    public func messageValueChanged(name: String, newValue: String) -> String {
+        return "New value for \(name): \(newValue)\n\n"
+    }
+    
+    public func messageNoChangeMade() -> String {
+        return "No change made.\n\n"
     }
 }
 
@@ -99,11 +106,12 @@ extension MenuItem: CustomStringConvertible {
     }
 }
 
+
 /// Defines all menu item types, which control how they appear and behave.
 
 public enum MenuItemType {
     
-    /// The `.boolean` type is presented like "`✓ foo`" or "`  foo`" and when run it simply toggles its value and returns.
+    /// The `.boolean` type is presented with the name and, if value equates to true, a checkbox next to it. When run it simply toggles its value and returns.
     
     case boolean
     
@@ -116,6 +124,7 @@ public enum MenuItemType {
     
     case predefined
 }
+
 
 /// Experimental idea: validator
 

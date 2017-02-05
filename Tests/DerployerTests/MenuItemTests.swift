@@ -46,6 +46,38 @@ class MenuItemTests: XCTestCase {
         XCTAssertEqual(string.description, "  string: j_vattrs")
         XCTAssertEqual(predefined.description, "  predefined: bar")
     }
+    
+    func test_run_boolean() {
+        
+        let interface = TestMenuInterface()
+        interface.shouldPrint = true
+        
+        bool.run(interface: interface)
+        XCTAssertEqual(bool.value, "false")
+        // running a bool just flips the value
+    }
+    
+    func test_run_string() {
+        
+        var interface = TestMenuInterface()
+        interface.shouldPrint = true
+        
+        interface.inputs = ["gone is gone"]
+        string.run(interface: interface)
+        var expected = [
+            string.messageAcceptOrManuallyChangeValue(name: "string", value: "hoge"),
+            string.messageValueChanged(name: "string", newValue: "gone is gone")
+        ]
+        XCTAssertEqual(interface.outputs, expected)
+        
+        interface = TestMenuInterface()
+        string.run(interface: interface)
+        expected = [
+            string.messageAcceptOrManuallyChangeValue(name: "string", value: "gone is gone"),
+            string.messageNoChangeMade()
+        ]
+        XCTAssertEqual(interface.outputs, expected)
+    }
 }
 
 

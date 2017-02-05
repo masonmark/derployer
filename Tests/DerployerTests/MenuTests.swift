@@ -31,8 +31,8 @@ class MenuTests: XCTestCase {
         let expected = [
             "=====  TEST MENU  ==========================================================================",
             "",
-            "[1] foo: bar",
-            "[2] baz: ホゲ",
+            "[1]   foo: bar",
+            "[2]   baz: ホゲ",
             "",
             "Choose from menu, or press ↩︎ to accept current values:",
             "",
@@ -55,8 +55,8 @@ class MenuTests: XCTestCase {
         let expected = [
             "=====  TEST MENU  ==========================================================================",
             "",
-            "[1] foo: #assclownPOTUS",
-            "[2] baz: 💩",
+            "[1]   foo: #assclownPOTUS",
+            "[2]   baz: 💩",
             "",
             "Choose from menu, or press ↩︎ to accept current values:",
             "",
