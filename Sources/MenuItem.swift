@@ -1,13 +1,13 @@
 // MenuItem.swift Created by mason on 2017-01-20.
 
 
-public class MenuItem {
+public class MenuItem: DerpSerializable {
     
     /// The name of the item (may be an identifier, should probably be unique for most use cases).
-    public var name: String
+    public var name: String = ""
     
     /// The actual primitive value is always a string
-    public var value: String? // MAYBE THIS SHOULD BE String and not optiona???
+    public var value: String = ""
     
     public var validator: MenuItemValidator? = nil
     
@@ -15,7 +15,11 @@ public class MenuItem {
     
     public var predefinedValues: [String]? = nil
     
-    public init(_ name: String, value: String? = nil, validator: MenuItemValidator? = nil, type: MenuItemType = .string, predefinedValues: [String]? = nil) {
+    public required init() {
+        
+    }
+    
+    public init(_ name: String, value: String = "", validator: MenuItemValidator? = nil, type: MenuItemType = .string, predefinedValues: [String]? = nil) {
         
         self.name      = name
         self.value     = value
@@ -27,7 +31,7 @@ public class MenuItem {
     public func run(interface: MenuInterface, message: String? = nil) {
         
         if (type == .boolean) {
-            if let val = self.value, let boolVal = Bool(val) {
+            if let boolVal = Bool(value) {
                 self.value = String(!boolVal)
             } else {
                 self.value = String(true)
@@ -41,8 +45,7 @@ public class MenuItem {
             interface.write("\n\n")
         }
         
-        let displayValue = value ?? "<not set>"
-        let prompt = messageAcceptOrManuallyChangeValue(name: name, value: displayValue)
+        let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value)
         interface.write(prompt)
         let input = interface.read()
         
@@ -62,11 +65,65 @@ public class MenuItem {
         }
     }
     
+    
+    
     public func validate(_ input: String) -> Bool {
-        guard let v = validator else {
-            return true
+        
+        if let v = validator {
+            return v(input)
+        
+        } else if type == .boolean {
+            return Bool(input) != nil
+        
+        } else if type == .predefined {
+            guard let allowed = predefinedValues else {
+                return false
+            }
+            return allowed.contains(input)
         }
-        return v(input)
+        return true
+    }
+    
+    public func serialize() throws -> DerpSerializationValues {
+        let k = SerializationKeys()
+        return [
+            k.name             : name,
+            k.value            : value,
+            k.type             : type.rawValue,
+            k.predefinedValues : predefinedValues
+        ]
+    }
+    
+    public func deserialize(_ values: DerpSerializationValues) throws {
+    
+        let k = SerializationKeys()
+
+        guard let name = values[k.name] as? String else {
+            throw DerpSerializableError.DeserializationFailed("required 'name' value not present")
+        }
+        self.name = name
+        
+        guard let typeName = values[k.type] as? String, let type = MenuItemType(rawValue: typeName) else {
+            throw DerpSerializableError.DeserializationFailed("invalid MenuItemType value")
+        }
+        self.type = type
+    
+        guard let value = values[k.value] as? String else {
+            throw DerpSerializableError.DeserializationFailed("required 'value' value not present")
+        }
+        self.value = value
+        
+        if let predefinedValues = values[k.predefinedValues] as? [String] {
+            self.predefinedValues = predefinedValues
+        }
+    }
+    
+    private struct SerializationKeys {
+        let name             = "name"
+        let value            = "value"
+        let type             = "type"
+        let predefinedValues = "predefinedValues"
+        
     }
 }
 
@@ -93,7 +150,7 @@ extension MenuItem {
 
 extension MenuItem: CustomStringConvertible {
     
-    /// Returns a string suitable for uise in a menu (item in a list of items).
+    /// Returns a string suitable for use in a menu (item in a list of items).
     
     public var description: String {
         switch type {
@@ -101,7 +158,7 @@ extension MenuItem: CustomStringConvertible {
             let check = value == "true" ? "✓" : " " // other types should have two leading spaces to align
             return "\(check) \(name)"
         default:
-            return "  \(name): \(value ?? "")"
+            return "  \(name): \(value)"
         }
     }
 }
@@ -109,7 +166,7 @@ extension MenuItem: CustomStringConvertible {
 
 /// Defines all menu item types, which control how they appear and behave.
 
-public enum MenuItemType {
+public enum MenuItemType: String {
     
     /// The `.boolean` type is presented with the name and, if value equates to true, a checkbox next to it. When run it simply toggles its value and returns.
     

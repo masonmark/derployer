@@ -7,7 +7,8 @@ class MenuItemTests: XCTestCase {
     
     let bool       = MenuItem("bool", value: "true", validator: nil, type: .boolean)
     let string     = MenuItem("string", value: "hoge", validator: nil, type: .string)
-    let predefined = MenuItem("predefined", value: "foo", validator: nil, type: .string, predefinedValues: ["foo", "bar"])
+    let predefined = MenuItem("predefined", value: "foo", validator: nil, type: .predefined, predefinedValues: ["foo", "bar"])
+    
     
     func test_validation() {
         
@@ -31,6 +32,22 @@ class MenuItemTests: XCTestCase {
         
         XCTAssertTrue(whatever.validate("#assclownPOTUS"))
     }
+    
+    
+    func test_validation_of_built_in_types() {
+        
+        XCTAssertTrue(bool.validate("true"))
+        XCTAssertTrue(bool.validate("false"))
+        XCTAssertFalse(bool.validate("hoge"))
+        XCTAssertFalse(bool.validate("yes"))
+        XCTAssertFalse(bool.validate("no"))
+        XCTAssertFalse(bool.validate(""))
+        
+        XCTAssertTrue(predefined.validate("foo"))
+        XCTAssertTrue(predefined.validate("bar"))
+        XCTAssertFalse(predefined.validate("baz"))
+    }
+    
     
     func test_formatting() {
         

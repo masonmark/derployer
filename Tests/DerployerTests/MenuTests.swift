@@ -110,7 +110,6 @@ class MenuTests: XCTestCase {
     }
     
     
-    
     func test_custom_menu_values() {
         
         menuInterface.inputs = ["ho ho ho", "yee haw", "snausages!", "fuck Trump" ]
@@ -139,12 +138,12 @@ class MenuTests: XCTestCase {
     func test_init_from_DeployValues() {
         
         let values = [
-            DerpVal("foo", value: "bar"),
-            DerpVal("hoge", value: "hoge"),
+            MenuItem("foo", value: "bar"),
+            MenuItem("hoge", value: "hoge"),
         ]
-        let deployValues = DerpValList(values)
+        let phase = DeployPhase(menuItems: values)
         
-        let menu = Menu(list: deployValues)
+        let menu = Menu(deployPhase: phase)
         
         XCTAssert(menu.content.count == 2);
         XCTAssert(menu.content[safe: 0]?.value == "bar");
@@ -160,9 +159,7 @@ class MenuTests: XCTestCase {
         
         XCTAssert(result["foo"]  == "ass")
         XCTAssert(result["hoge"] == "hat")
-        
     }
-
 }
 
 

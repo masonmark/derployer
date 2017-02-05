@@ -19,8 +19,11 @@ public class Menu {
     
     public var interface: MenuInterface = DefaultMenuInterface()
     
-    public init(title: String? = nil) {
+    public init(title: String? = nil, content: [MenuItem]? = nil) {
         self.title = title
+        if let content = content {
+            self.content = content
+        }
     }
     
    
@@ -172,29 +175,5 @@ extension Menu {
             let v = self.values
             return TargetHostValues(hostname: v["hostname"], username: v["username"], sshPort: v["sshPort"], sshKeyPath: v["sshKeyPath"])
         }
-    }
-}
-
-
-extension Menu {
-    
-    /// Initializes a Menu instance from a DerpValList instance.
-
-    public convenience init(list: DerpValList) {
-        
-        self.init()
-        self.title = "DEPLOY VALUES:" // FIXME: give DerpValList a name property, then use it here.
-        
-        self.headers = [
-            "Edit the deploy values to control how the target machine is configured."
-        ]
-
-        var menuItems: [MenuItem] = []
-        
-        for dv in list.derpVals {
-            let item = MenuItem(dv.identifier, value: (dv.value as? String) ?? "")
-            menuItems.append(item)
-        }
-        self.content = menuItems
     }
 }
