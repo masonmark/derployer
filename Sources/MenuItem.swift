@@ -1,7 +1,10 @@
 // MenuItem.swift Created by mason on 2017-01-20.
 
+// Mason 2017-02-05: I think what it messy here is that MenuItem and Menu are too conflated and mixed up.
+// Menu should maybe do ALL direct input processing -- and menu items should only process input passed t
 
-public class MenuItem: DerpSerializable {
+
+public class MenuItem: DerpSerializable, MenuInterlocutor {
     
     /// The name of the item (may be an identifier, should probably be unique for most use cases).
     public var name: String = ""
@@ -28,9 +31,19 @@ public class MenuItem: DerpSerializable {
         self.predefinedValues = predefinedValues
     }
     
+    public convenience init(staticValue: String) {
+        self.init(staticValue, value: staticValue, type: .staticValue)
+    }
+    
     public func run(interface: MenuInterface, message: String? = nil) {
         
-        if (type == .boolean) {
+        if let message = message {
+            interface.write("\n")
+            interface.write(message)
+            interface.write("\n\n")
+        }
+        
+        if type == .boolean {
             if let boolVal = Bool(value) {
                 self.value = String(!boolVal)
             } else {
@@ -39,10 +52,16 @@ public class MenuItem: DerpSerializable {
             return
         }
         
-        if let message = message {
-            interface.write("\n")
-            interface.write(message)
-            interface.write("\n\n")
+        if type == .predefined {
+            let allowed = predefinedValues ?? []
+            let menu = Menu(forSelectingPredefinedValue: allowed, only: true)
+            menu.interface = interface
+            
+            guard let result = menu.run() as? String else {
+                fatalError("FIXME: how should this be handled?")
+            }
+            value = result
+            return
         }
         
         let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value)
@@ -80,6 +99,9 @@ public class MenuItem: DerpSerializable {
                 return false
             }
             return allowed.contains(input)
+        
+        } else if type == .staticValue {
+            return input == value
         }
         return true
     }
@@ -128,7 +150,10 @@ public class MenuItem: DerpSerializable {
 }
 
 
-extension MenuItem {
+protocol MenuInterlocutor {
+}
+
+extension MenuInterlocutor {
     
     public func messageAcceptOrManuallyChangeValue(name: String, value:String) -> String {
         return "\(name): \(value). Press ↩︎ to accept, or else enter a new value.\n"
@@ -180,6 +205,10 @@ public enum MenuItemType: String {
     /// The `.predefined` type is presented like "`  name: value`" and when run it presents a menu for selecting one of the predefined values.
     
     case predefined
+    
+    /// The `.staticValue` type just has a value that doesn't change.
+    
+    case staticValue
 }
 
 

@@ -5,7 +5,22 @@
 ///
 /// Simple named-value lists can be managed by default, and Menu can be extended (via custom initializers and custom MenuResultBuilder closures) to manage other kinds of data.
 
-public class Menu {
+/*
+ 
+ NOTES:
+ 
+ Menus:
+ - do UI and return a list of named values
+ - do UI return a single value
+ - just do UI, optionally doing some action, and return nothing
+ 
+ What I don't like is how the Menu class also *manages* the state of this list of named values. Somebody else should do the managing and just let Menu deal with the UI I/O....
+ 
+ And I don't like how MenuItem 
+ 
+ */
+
+public class Menu: MenuInterlocutor {
     
     public var title: String? = nil
     
@@ -26,7 +41,28 @@ public class Menu {
         }
     }
     
-   
+    public convenience init(forSelectingPredefinedValue valueList: [String], only: Bool, interface: MenuInterface? = nil) {
+        
+        var content: [MenuItem] = []
+        for val in valueList {
+            content.append(MenuItem(staticValue: val))
+        }
+        
+        self.init(title: "CHOOSE VALUE BRO (FIXME", content:content)
+        prompt = "Choose a value from the list and press ↩︎ to confirm:\n"
+        
+        inputHandler = {
+            input, menu in
+            
+            if let menuItem = self[input] {
+                return menuItem.value
+            } else {
+                return menu.run(resultsMessage: menu.messageBadInputPleaseTryAgain(input: input))
+            }
+        }
+    }
+
+    
     /// Returns the result of running the menu. Running the menu means presenting its contents via the menu interface (normally, to allow editing), repeating in a loop, until complete.
     
     public func run(resultsMessage: String? = nil) -> Any? {
