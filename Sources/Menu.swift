@@ -34,30 +34,42 @@ public class Menu: MenuInterlocutor {
     
     public var interface: MenuInterface = DefaultMenuInterface()
     
-    public init(title: String? = nil, content: [MenuItem]? = nil) {
+    public init(title: String? = nil, content: [MenuItem]? = nil, interface: MenuInterface? = nil) {
         self.title = title
         if let content = content {
             self.content = content
         }
+        if let interface = interface {
+            self.interface = interface
+        }
     }
     
-    public convenience init(forSelectingPredefinedValue valueList: [String], only: Bool, interface: MenuInterface? = nil) {
+    public convenience init(forSelectingPredefinedValue valueList: [String], only: Bool, current: String, interface: MenuInterface? = nil) {
         
         var content: [MenuItem] = []
         for val in valueList {
             content.append(MenuItem(staticValue: val))
         }
         
-        self.init(title: "CHOOSE VALUE BRO (FIXME", content:content)
+        if !only {
+            content.append(MenuItem("other value", value: "", type: .userInput))
+        }
+        
+        self.init(title: "CHOOSE VALUE BRO (FIXME", content:content, interface: interface)
         prompt = "Choose a value from the list and press ↩︎ to confirm:\n"
         
         inputHandler = {
             input, menu in
             
             if let menuItem = self[input] {
-                return menuItem.value
+                return menuItem.run(interface: self.interface)
             } else {
-                return menu.run(resultsMessage: menu.messageBadInputPleaseTryAgain(input: input))
+                if only {
+                    return menu.run(resultsMessage: menu.messageBadInputPleaseTryAgain(input: input))
+                } else {
+                    return input
+                    // FIXME: this design may work, but it is wrong. we need ref to the parent menu item here, so that we can ask it to validate.
+                }
             }
         }
     }
@@ -106,7 +118,7 @@ public class Menu: MenuInterlocutor {
                 
             } else if let menuItem = self[input] {
                 
-                menuItem.run(interface:interface)
+                _ = menuItem.run(interface:interface)
 
             } else {
                 
@@ -142,7 +154,7 @@ public class Menu: MenuInterlocutor {
         
         var result: [String:String] = [:]
         for menuItem in content {
-            result[menuItem.name] = menuItem.value
+            result[menuItem.name] = menuItem.value.toString()
         }
         return result;
     }

@@ -17,7 +17,22 @@ class MenuTests: XCTestCase {
         menu.interface = menuInterface
     }
 
+    //    func test_fuck_Mason_your_initial_design_was_WRONG() {
+    //        
+    //        menu.content = [
+    //            MenuItem("no", value: false),       // .boolean
+    //            MenuItem("yes", value: 5),          // .integer
+    //            MenuItem("name", value: "Roger"),   // .string
+    //            MenuItem("drinks", predefinedValues: ["coffee", "tea", "milk"]), // .predefined
+    //            
+    //        ]
+    //        
+    //        
+    //        
+    //    }
+    // MASON 2017-02-07: someday I want to change my design mistake where MenuItem's value is String....
     
+        
     func test_basic_presentation() {
         
         menu.content = [
@@ -86,8 +101,8 @@ class MenuTests: XCTestCase {
             MenuItem("foo", value: "bar"),
             MenuItem("baz", value: "ホゲ")
         ]
-        XCTAssertEqual(menu["1"]?.value, "bar")
-        XCTAssertEqual(menu["2"]?.value, "ホゲ")
+        XCTAssertEqual(menu["1"]?.stringValue, "bar")
+        XCTAssertEqual(menu["2"]?.stringValue, "ホゲ")
         XCTAssertNil(menu["nonexistent"])
         XCTAssertNil(menu["666"])
         
@@ -146,8 +161,8 @@ class MenuTests: XCTestCase {
         let menu = Menu(deployPhase: phase)
         
         XCTAssert(menu.content.count == 2);
-        XCTAssert(menu.content[safe: 0]?.value == "bar");
-        XCTAssert(menu.content[safe: 1]?.value == "hoge");
+        XCTAssert(menu.content[safe: 0]?.stringValue == "bar");
+        XCTAssert(menu.content[safe: 1]?.stringValue == "hoge");
         
         menu.interface = TestMenuInterface(inputs: ["1", "ass", "2", "hat", ""])
         guard let result = menu.run() as? [String:String]  else {

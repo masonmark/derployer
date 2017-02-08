@@ -4,13 +4,92 @@
 // Menu should maybe do ALL direct input processing -- and menu items should only process input passed t
 
 
+
+public protocol MenuItemValue {
+    func toString() -> String
+    mutating func updateFrom(string: String) -> Bool
+}
+
+extension MenuItemValue {
+    
+    var boolValue: Bool {
+        guard let val = self as? Bool else {
+            return false
+        }
+        return val
+    }
+}
+
+extension String: MenuItemValue {
+    public func toString() -> String {
+        return self
+    }
+    public mutating func updateFrom(string: String) -> Bool {
+        self.removeAll()
+        self.append(string)
+        return true
+    }
+    
+    
+    public func makeMenuItemValue(type: MenuItemType) -> MenuItemValue {
+        var result: MenuItemValue
+        switch type {
+        case .boolean:
+            result = Bool(self) ?? false
+        default:
+            result = String(self)
+        }
+        return result
+    }
+
+}
+
+extension Bool: MenuItemValue {
+    public func toString() -> String {
+        return String(self)
+    }
+    public mutating func updateFrom(string: String) -> Bool {
+        guard let newValue = Bool(string) else {
+            return false
+        }
+        self = newValue
+        return true
+    }
+}
+
+
+// MASON 2017-02-07: This is still experimental.... not doing this yet:
+//
+//extension Array where Element == MenuItem {
+//    // Above line's syntax intro'd in Swift 3.1: http://stackoverflow.com/a/40214792/164017
+//    
+//    func toString() -> String {
+//        return "hhoop"
+//    }
+//    mutating func takeValue(string: String) -> Bool {
+//        return true
+//    }
+//}
+
+
+
+
+
 public class MenuItem: DerpSerializable, MenuInterlocutor {
     
     /// The name of the item (may be an identifier, should probably be unique for most use cases).
     public var name: String = ""
     
-    /// The actual primitive value is always a string
-    public var value: String = ""
+    public var value: MenuItemValue = "" // FIXME should be MenuItemValue?
+    
+    public var stringValue: String {
+        return value.toString()
+    }
+    
+    public var boolValue: Bool {
+        return value.boolValue
+    }
+    
     
     public var validator: MenuItemValidator? = nil
     
@@ -22,7 +101,7 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
         
     }
     
-    public init(_ name: String, value: String = "", validator: MenuItemValidator? = nil, type: MenuItemType = .string, predefinedValues: [String]? = nil) {
+    public init(_ name: String, value: MenuItemValue = "", validator: MenuItemValidator? = nil, type: MenuItemType = .string, predefinedValues: [String]? = nil) {
         
         self.name      = name
         self.value     = value
@@ -35,7 +114,9 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
         self.init(staticValue, value: staticValue, type: .staticValue)
     }
     
-    public func run(interface: MenuInterface, message: String? = nil) {
+    /// Run updates the MenuItem's value, and returns it. To "update" the value means something different depending on the type. It might just toggle a boolean flag; it might run a series of menus and interact with the user to build/confirm a more complex value.
+    
+    public func run(interface: MenuInterface, message: String? = nil) -> MenuItemValue {
         
         if let message = message {
             interface.write("\n")
@@ -43,48 +124,55 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
             interface.write("\n\n")
         }
         
-        if type == .boolean {
-            if let boolVal = Bool(value) {
-                self.value = String(!boolVal)
-            } else {
-                self.value = String(true)
-            }
-            return
+        if type == .staticValue {
+            return value
         }
         
-        if type == .predefined {
+        if type == .boolean {
+            value = !value.boolValue
+            return value
+        }
+        
+        if type == .userInput {
+            let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value.toString())
+            interface.write(prompt)
+            value = interface.read()
+            return value
+        }
+        
+        if type == .predefined || predefinedValues != nil {
             let allowed = predefinedValues ?? []
-            let menu = Menu(forSelectingPredefinedValue: allowed, only: true)
+            let menu = Menu(forSelectingPredefinedValue: allowed, only: type == .predefined, current: stringValue)
             menu.interface = interface
             
             guard let result = menu.run() as? String else {
                 fatalError("FIXME: how should this be handled?")
             }
             value = result
-            return
+            return value
         }
         
-        let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value)
+        let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value.toString())
         interface.write(prompt)
         let input = interface.read()
         
         if input == "" {
         
             interface.write(messageNoChangeMade())
+            return value
         
         } else if !validate(input) {
             
             let warning = messageBadInputPleaseTryAgain(input: input)
-            run(interface: interface, message: warning)
+            return run(interface: interface, message: warning)
             
         } else {
             value = input
             let changeMessage = messageValueChanged(name: name, newValue: input)
             interface.write(changeMessage)
+            return value
         }
     }
-    
-    
     
     public func validate(_ input: String) -> Bool {
         
@@ -101,7 +189,7 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
             return allowed.contains(input)
         
         } else if type == .staticValue {
-            return input == value
+            return input == value.toString()
         }
         return true
     }
@@ -110,7 +198,7 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
         let k = SerializationKeys()
         return [
             k.name             : name,
-            k.value            : value,
+            k.value            : value.toString(),
             k.type             : type.rawValue,
             k.predefinedValues : predefinedValues
         ]
@@ -130,10 +218,10 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
         }
         self.type = type
     
-        guard let value = values[k.value] as? String else {
+        guard let valueString = values[k.value] as? String else {
             throw DerpSerializableError.DeserializationFailed("required 'value' value not present")
         }
-        self.value = value
+        self.value = valueString.makeMenuItemValue(type: self.type)
         
         if let predefinedValues = values[k.predefinedValues] as? [String] {
             self.predefinedValues = predefinedValues
@@ -180,7 +268,7 @@ extension MenuItem: CustomStringConvertible {
     public var description: String {
         switch type {
         case .boolean:
-            let check = value == "true" ? "✓" : " " // other types should have two leading spaces to align
+            let check = value.boolValue ? "✓" : " " // other types should have two leading spaces to align
             return "\(check) \(name)"
         default:
             return "  \(name): \(value)"
@@ -206,9 +294,13 @@ public enum MenuItemType: String {
     
     case predefined
     
-    /// The `.staticValue` type just has a value that doesn't change.
+    /// The `.staticValue` type just has a String value that doesn't change.
     
     case staticValue
+    
+    /// The `.userInput` type prompts user for a string.
+    
+    case userInput
 }
 
 

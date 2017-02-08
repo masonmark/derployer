@@ -5,7 +5,7 @@ import XCTest
 
 class MenuItemTests: XCTestCase {
     
-    let bool       = MenuItem("bool", value: "true", validator: nil, type: .boolean)
+    let bool       = MenuItem("bool", value: true, validator: nil, type: .boolean)
     let string     = MenuItem("string", value: "hoge", validator: nil, type: .string)
     let predefined = MenuItem("predefined", value: "foo", validator: nil, type: .predefined, predefinedValues: ["foo", "bar"])
     
@@ -69,8 +69,8 @@ class MenuItemTests: XCTestCase {
         let interface = TestMenuInterface()
         interface.shouldPrint = true
         
-        bool.run(interface: interface)
-        XCTAssertEqual(bool.value, "false")
+        let runResult = bool.run(interface: interface)
+        XCTAssertEqual(bool.boolValue, false)
         // running a bool just flips the value
     }
     
