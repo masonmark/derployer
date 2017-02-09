@@ -86,34 +86,8 @@ public class Menu: MenuInterlocutor {
         case .userInput:
             prompt  = promptManuallyEnterNewValueOrAcceptCurrent(name: menuItem.name, value: menuItem.stringValue)
         }
-        
-        self.inputHandler = { input, menu in
-            
-            if (input == "") {
-                // So far, at least, this always means "no change".
-                self.interface.write(self.messageNoChangeMade())
-                return menuItem.value
-            }
-            
-            var actualInput = input
-
-            if let itemSelected = self[input] {
-                actualInput = itemSelected.run(interface: self.interface).toString()
-            }
-            
-            if menuItem.validate(actualInput) {
-                menuItem.value = actualInput.makeMenuItemValue(type: menuItem.type)
-                let changeMessage = self.messageValueChanged(name: menuItem.name, newValue: menuItem.stringValue)
-                self.interface.writeResultsMessage(changeMessage)
-                return menuItem.value
-                
-            } else {
-                let nope = self.messageBadInputPleaseTryAgain(input: input)
-                interface?.writeResultsMessage(nope)
-                return self.run()
-            }
-        }
     }
+    
     
     
     
@@ -167,19 +141,54 @@ public class Menu: MenuInterlocutor {
         
         } else {
             
-            if input == "" {
-                
-                return menuResult
-                
-            } else if let menuItem = self[input] {
-                
-                _ = menuItem.run(interface:interface)
-
-            } else {
-                
-                interface.write("Sorry, '\(input)' is not something I understand.")
+            guard let menuItem = menuItem else {
+                return process(input: input)
             }
-            return run()
+            return process(input: input, forMenuItem:menuItem)
+        }
+    }
+    
+    /// The default input processing for when the menu IS NOT a submenu of a MenuItem, so it is processing input for itself (assumption here is that this is a root menu with a list of menu items.
+    public func process(input: String) -> Any? {
+        
+        if input == "" {
+            
+            return menuResult
+            
+        } else if let menuItem = self[input] {
+            
+            _ = menuItem.run(interface:interface)
+            // Here we run the menu for the menu item, for its side effect of updating the value of the menu item, but we don't return that value, and instead run the receiver again after doing that. This is sort of surprising, and it is a legacy of my first design of the menu system, which kind of totally sucked balls, so FIXME bro...
+        } else {
+            interface.write("Sorry, '\(input)' is not something I understand.")
+        }
+        return run()
+    }
+    
+    /// The default input processing for when the menu IS a submenu of a MenuItem.
+    public func process(input: String, forMenuItem menuItem: MenuItem) -> Any? {
+        
+        if (input == "") {
+            // So far, at least, this always means "no change".
+            interface.write(messageNoChangeMade())
+            return menuItem.value
+        }
+        
+        var actualInput = input
+        
+        if let itemSelected = self[input] {
+            actualInput = itemSelected.run(interface: self.interface).toString() // FIXME :-/
+        }
+        if menuItem.validate(actualInput) {
+            
+            menuItem.value = actualInput.makeMenuItemValue(type: menuItem.type)
+            let changeMessage = self.messageValueChanged(name: menuItem.name, newValue: menuItem.stringValue)
+            self.interface.writeResultsMessage(changeMessage)
+            return menuItem.value
+        } else {
+            let nope = self.messageBadInputPleaseTryAgain(input: input)
+            interface.writeResultsMessage(nope)
+            return self.run()
         }
     }
     
