@@ -56,15 +56,6 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
         
         switch type {
             
-        case .boolean:
-            // FIXME: make this a menu, pass it the message
-            value = !value.boolValue
-            return value
-            
-        case .staticValue:
-            // FIXME: make this a menu, pass it the message
-            return value
-            
         default:
             let menu = Menu(menuItem: self, interface: interface)
             guard let result = menu.run(resultsMessage: message) as? MenuItemValue else {

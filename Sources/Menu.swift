@@ -34,6 +34,11 @@ public class Menu: MenuInterlocutor {
     
     public var interface: MenuInterface = DefaultMenuInterface()
     
+    /// Allows certain menus to short-circuit the run() process, without actually asking for input.
+    private var preordainedValue: MenuItemValue? = nil
+    
+    private var menuItem: MenuItem? = nil
+    
     
     public init(title: String? = nil, content: [MenuItem]? = nil, interface: MenuInterface? = nil) {
         
@@ -57,10 +62,12 @@ public class Menu: MenuInterlocutor {
             }
         }
         
+        self.menuItem = menuItem
+        
         switch menuItem.type {
         
         case .boolean:
-            fatalError("menu init from bool not yet implemented")
+            preordainedValue = !menuItem.boolValue
         
         case .string:
             if content.count > 0 {
@@ -74,7 +81,7 @@ public class Menu: MenuInterlocutor {
             prompt = promptChooseFromMenuOrAcceptCurrent(name: menuItem.name, value: menuItem.stringValue)
             
         case .staticValue:
-            fatalError("menu init from .staticValue not yet implemented")
+            preordainedValue = menuItem.value
 
         case .userInput:
             prompt  = promptManuallyEnterNewValueOrAcceptCurrent(name: menuItem.name, value: menuItem.stringValue)
@@ -133,6 +140,16 @@ public class Menu: MenuInterlocutor {
         
         for footer in footers {
             interface.writeFooter(footer)
+        }
+        
+        if let result = preordainedValue {
+            // We do this AFTER printing title, headers, etc...
+            
+            guard let item = menuItem else {
+                fatalError("🐜 preordainedValue implies self.menuItem != nil, but it's nil")
+            }
+            item.value = result
+            return result
         }
         
         interface.writePrompt(prompt ?? defaultPrompt)
