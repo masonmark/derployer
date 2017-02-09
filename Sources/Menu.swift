@@ -34,7 +34,79 @@ public class Menu: MenuInterlocutor {
     
     public var interface: MenuInterface = DefaultMenuInterface()
     
+    
+    public convenience init(menuItem: MenuItem, title: String? = nil, interface: MenuInterface? = nil) {
+        
+        self.init()
+        if let interface = interface {
+            self.interface = interface
+        }
+        if let title = title {
+            self.title = title
+        }
+        
+        if let predefinedValues = menuItem.predefinedValues {
+            for val in predefinedValues {
+                content.append(MenuItem(staticValue: val))
+            }
+        }
+        
+        switch menuItem.type {
+        
+        case .boolean:
+            fatalError("menu init from bool not yet implemented")
+        
+        case .string:
+            if content.count > 0 {
+                content.append(MenuItem("other value", value: "", type: .userInput))
+                prompt = promptChooseOrEnterValue()
+            } else {
+                prompt = messageAcceptOrManuallyChangeValue(name: menuItem.name, value: menuItem.stringValue)
+            }
+            
+        case .predefined:
+            prompt = promptChooseFromMenuOrAcceptCurrent(name: menuItem.name, value: menuItem.stringValue)
+            
+        case .staticValue:
+            fatalError("menu init from .staticValue not yet implemented")
+
+        case .userInput:
+            content = []
+            prompt  = promptManuallyEnterNewValueOrAcceptCurrent(name: menuItem.name, value: menuItem.stringValue)
+        }
+        
+        self.inputHandler = { input, menu in
+            
+            if (input == "") {
+                // So far, at least, this always means "no change".
+                self.interface.write(self.messageNoChangeMade())
+                return menuItem.value
+            }
+            
+            var actualInput = input
+
+            if let itemSelected = self[input] {
+                actualInput = itemSelected.run(interface: self.interface).toString()
+            }
+            
+            if menuItem.validate(actualInput) {
+                menuItem.value = actualInput.makeMenuItemValue(type: menuItem.type)
+                let changeMessage = self.messageValueChanged(name: menuItem.name, newValue: menuItem.stringValue)
+                self.interface.writeResultsMessage(changeMessage)
+                return menuItem.value
+                
+            } else {
+                let nope = self.messageBadInputPleaseTryAgain(input: input)
+                interface?.writeResultsMessage(nope)
+                return self.run()
+            }
+        }
+    }
+    
+    
+    
     public init(title: String? = nil, content: [MenuItem]? = nil, interface: MenuInterface? = nil) {
+        
         self.title = title
         if let content = content {
             self.content = content
@@ -44,36 +116,6 @@ public class Menu: MenuInterlocutor {
         }
     }
     
-    public convenience init(forSelectingPredefinedValue valueList: [String], only: Bool, current: String, interface: MenuInterface? = nil) {
-        
-        var content: [MenuItem] = []
-        for val in valueList {
-            content.append(MenuItem(staticValue: val))
-        }
-        
-        if !only {
-            content.append(MenuItem("other value", value: "", type: .userInput))
-        }
-        
-        self.init(title: "CHOOSE VALUE BRO (FIXME", content:content, interface: interface)
-        prompt = "Choose a value from the list and press ↩︎ to confirm:\n"
-        
-        inputHandler = {
-            input, menu in
-            
-            if let menuItem = self[input] {
-                return menuItem.run(interface: self.interface)
-            } else {
-                if only {
-                    return menu.run(resultsMessage: menu.messageBadInputPleaseTryAgain(input: input))
-                } else {
-                    return input
-                    // FIXME: this design may work, but it is wrong. we need ref to the parent menu item here, so that we can ask it to validate.
-                }
-            }
-        }
-    }
-
     
     /// Returns the result of running the menu. Running the menu means presenting its contents via the menu interface (normally, to allow editing), repeating in a loop, until complete.
     
@@ -91,7 +133,10 @@ public class Menu: MenuInterlocutor {
             interface.writeHeader(header)
         }
         
-        interface.writeContent(content)
+        if content.count > 0 {
+            // test to avoid writing useless "" which impairs testability
+            interface.writeContent(content)
+        }
         
         for footer in footers {
             interface.writeFooter(footer)

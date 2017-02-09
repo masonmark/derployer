@@ -175,6 +175,8 @@ class MenuTests: XCTestCase {
         XCTAssert(result["foo"]  == "ass")
         XCTAssert(result["hoge"] == "hat")
     }
+    
+    
 }
 
 

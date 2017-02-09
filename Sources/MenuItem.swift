@@ -1,90 +1,20 @@
 // MenuItem.swift Created by mason on 2017-01-20.
 
-// Mason 2017-02-05: I think what it messy here is that MenuItem and Menu are too conflated and mixed up.
-// Menu should maybe do ALL direct input processing -- and menu items should only process input passed t
-
-
-
-public protocol MenuItemValue {
-    func toString() -> String
-    mutating func updateFrom(string: String) -> Bool
-}
-
-extension MenuItemValue {
-    
-    var boolValue: Bool {
-        guard let val = self as? Bool else {
-            return false
-        }
-        return val
-    }
-}
-
-extension String: MenuItemValue {
-    public func toString() -> String {
-        return self
-    }
-    public mutating func updateFrom(string: String) -> Bool {
-        self.removeAll()
-        self.append(string)
-        return true
-    }
-    
-    
-    public func makeMenuItemValue(type: MenuItemType) -> MenuItemValue {
-        var result: MenuItemValue
-        switch type {
-        case .boolean:
-            result = Bool(self) ?? false
-        default:
-            result = String(self)
-        }
-        return result
-    }
-
-}
-
-extension Bool: MenuItemValue {
-    public func toString() -> String {
-        return String(self)
-    }
-    public mutating func updateFrom(string: String) -> Bool {
-        guard let newValue = Bool(string) else {
-            return false
-        }
-        self = newValue
-        return true
-    }
-}
-
-
-// MASON 2017-02-07: This is still experimental.... not doing this yet:
-//
-//extension Array where Element == MenuItem {
-//    // Above line's syntax intro'd in Swift 3.1: http://stackoverflow.com/a/40214792/164017
-//    
-//    func toString() -> String {
-//        return "hhoop"
-//    }
-//    mutating func takeValue(string: String) -> Bool {
-//        return true
-//    }
-//}
-
-
-
-
+// FIXME?: Mason 2017-02-05: I think what it messy here is that MenuItem and Menu are too conflated and mixed up. Menu should maybe do ALL direct input processing -- and menu items should only process input passed to them from a Menu. (And maybe Menu is the wrong word... :-/ but can't think of anything more apt for "screen-like display of information that accepts some sort of user input for some purpose (perhaps just acknowledgement) )
 
 public class MenuItem: DerpSerializable, MenuInterlocutor {
     
     /// The name of the item (may be an identifier, should probably be unique for most use cases).
     public var name: String = ""
     
+    
     public var value: MenuItemValue = "" // FIXME should be MenuItemValue?
+    
     
     public var stringValue: String {
         return value.toString()
     }
+    
     
     public var boolValue: Bool {
         return value.boolValue
@@ -93,9 +23,12 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
     
     public var validator: MenuItemValidator? = nil
     
+    
     public var type: MenuItemType = .string
     
+    
     public var predefinedValues: [String]? = nil
+    
     
     public required init() {
         
@@ -110,69 +43,96 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
         self.predefinedValues = predefinedValues
     }
     
+    
     public convenience init(staticValue: String) {
         self.init(staticValue, value: staticValue, type: .staticValue)
     }
     
     /// Run updates the MenuItem's value, and returns it. To "update" the value means something different depending on the type. It might just toggle a boolean flag; it might run a series of menus and interact with the user to build/confirm a more complex value.
     
+    
     public func run(interface: MenuInterface, message: String? = nil) -> MenuItemValue {
         
-        if let message = message {
-            interface.write("\n")
-            interface.write(message)
-            interface.write("\n\n")
-        }
         
-        if type == .staticValue {
-            return value
-        }
-        
-        if type == .boolean {
+        switch type {
+            
+        case .boolean:
+            // FIXME: make this a menu, pass it the message
             value = !value.boolValue
             return value
-        }
-        
-        if type == .userInput {
-            let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value.toString())
-            interface.write(prompt)
-            value = interface.read()
-            return value
-        }
-        
-        if type == .predefined || predefinedValues != nil {
-            let allowed = predefinedValues ?? []
-            let menu = Menu(forSelectingPredefinedValue: allowed, only: type == .predefined, current: stringValue)
-            menu.interface = interface
             
-            guard let result = menu.run() as? String else {
-                fatalError("FIXME: how should this be handled?")
+        case .staticValue:
+            // FIXME: make this a menu, pass it the message
+            return value
+            
+        default:
+            let menu = Menu(menuItem: self, interface: interface)
+            guard let result = menu.run(resultsMessage: message) as? MenuItemValue else {
+                fatalError("FIXME: solve this design flaw >:-(")
             }
-            value = result
-            return value
+            return result
         }
         
-        let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value.toString())
-        interface.write(prompt)
-        let input = interface.read()
-        
-        if input == "" {
-        
-            interface.write(messageNoChangeMade())
-            return value
-        
-        } else if !validate(input) {
-            
-            let warning = messageBadInputPleaseTryAgain(input: input)
-            return run(interface: interface, message: warning)
-            
-        } else {
-            value = input
-            let changeMessage = messageValueChanged(name: name, newValue: input)
-            interface.write(changeMessage)
-            return value
-        }
+//        
+//        if let message = message {
+//            // FIXME: get rid of this and always run a Menu
+//            // Maybe this run() method should even just return a Menu then (?)
+//            interface.write("\n")
+//            interface.write(message)
+//            interface.write("\n\n")
+//        }
+//        
+//        
+//        if type == .staticValue {
+//            return value
+//        }
+//        
+//        if type == .boolean {
+//            value = !value.boolValue
+//            return value
+//        }
+//        
+//        if type == .userInput {
+//            let menu = Menu(menuItem: self, interface: interface)
+//            guard let result = menu.run() as? MenuItemValue else {
+//                fatalError("FIXME: how should this be handled?")
+//            }
+//            return result
+//        }
+//        
+//        if type == .string || type == .predefined || predefinedValues != nil {
+//            
+//            let menu = Menu(menuItem: self, interface: interface)
+//            
+//            guard let result = menu.run() as? MenuItemValue else {
+//                fatalError("FIXME: how should this be handled?")
+//            }
+//            return result
+//            
+//        }
+//        
+//        let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value.toString())
+//        interface.write(prompt)
+//        let input = interface.read()
+//        
+//        if input == "" {
+//        
+//            interface.write(messageNoChangeMade())
+//            return value
+//        
+//        } else if !validate(input) {
+//            
+//            let warning = messageBadInputPleaseTryAgain(input: input)
+//            return run(interface: interface, message: warning)
+//            
+//        } else {
+//            value = input
+//            let changeMessage = messageValueChanged(name: name, newValue: input)
+//            interface.write(changeMessage)
+//            return value
+//        }
     }
+    
     
     public func validate(_ input: String) -> Bool {
         
@@ -194,6 +154,14 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
         return true
     }
     
+    
+//    /// If `string` can be converted for a value type that is appropriate for the reciever (e.g., if the receiver's type is .boolean, then string is "true" or "false" (can be used to init a Bool)), this returns the value. Returns nil if string is invalid for the receiver's type.
+//    
+//    public func makeValueFrom(string: String) -> MenuItemValue? {
+//        // FIXME: delete this in favor of String:MenuItemValue's makeMenuItemValue(type:) ?
+//    }
+    
+    
     public func serialize() throws -> DerpSerializationValues {
         let k = SerializationKeys()
         return [
@@ -203,6 +171,7 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
             k.predefinedValues : predefinedValues
         ]
     }
+    
     
     public func deserialize(_ values: DerpSerializationValues) throws {
     
@@ -228,35 +197,13 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
         }
     }
     
+    
     private struct SerializationKeys {
         let name             = "name"
         let value            = "value"
         let type             = "type"
         let predefinedValues = "predefinedValues"
         
-    }
-}
-
-
-protocol MenuInterlocutor {
-}
-
-extension MenuInterlocutor {
-    
-    public func messageAcceptOrManuallyChangeValue(name: String, value:String) -> String {
-        return "\(name): \(value). Press ↩︎ to accept, or else enter a new value.\n"
-    }
-    
-    public func messageBadInputPleaseTryAgain(input: String) -> String {
-        return "⚠️  SORRY: '\(input)' is not something I understand. Please try again."
-    }
-    
-    public func messageValueChanged(name: String, newValue: String) -> String {
-        return "New value for \(name): \(newValue)\n\n"
-    }
-    
-    public func messageNoChangeMade() -> String {
-        return "No change made.\n\n"
     }
 }
 
@@ -270,6 +217,8 @@ extension MenuItem: CustomStringConvertible {
         case .boolean:
             let check = value.boolValue ? "✓" : " " // other types should have two leading spaces to align
             return "\(check) \(name)"
+        case .userInput:
+            return "  <enter other value>"
         default:
             return "  \(name): \(value)"
         }
@@ -304,6 +253,6 @@ public enum MenuItemType: String {
 }
 
 
-/// Experimental idea: validator
+/// Depending on the usage scenario, menu items may need to validate input and reject unusable values. There are some built in validators for common cases, but by implementing a MenuItemValidator you can do any kind of validation.
 
 public typealias MenuItemValidator = ((String)->Bool)

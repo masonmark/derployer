@@ -55,6 +55,11 @@ extension MenuFormatter {
         // FIXME: someday we should calculate the widest with, and use it to format more attractively (which is why this method takes the whole content array as param)
         
         var result = ""
+        
+        guard content.count > 0 else {
+            return result
+        }
+        
         var number = 1
         
         for item in content {
