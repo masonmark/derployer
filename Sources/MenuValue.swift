@@ -1,10 +1,10 @@
-// MenuItemValue.swift Created by mason on 2017-02-08. 
+// MenuValue.swift Created by mason on 2017-02-08. 
 
 import Foundation
 
-/// MenuItemValue type restricts what a MenuItem's value can be. They have to be serializable to/from strings, for both
+/// MenuValue type restricts what a Menu's value can be.
 
-public protocol MenuItemValue {
+public protocol MenuValue {
     
     // Must convert the reciever to a String, used for both serialization (to a JSON-compatible value for e.g. storing in a file) and also for displaying textually in a CLI menu.
 
@@ -16,7 +16,7 @@ public protocol MenuItemValue {
 }
 
 
-extension MenuItemValue {
+extension MenuValue {
     
     var boolValue: Bool {
         guard let val = self as? Bool else {
@@ -27,7 +27,7 @@ extension MenuItemValue {
 }
 
 
-extension String: MenuItemValue {
+extension String: MenuValue {
     
     public func toString() -> String {
         return self
@@ -41,8 +41,8 @@ extension String: MenuItemValue {
     }
     
     
-    public func makeMenuItemValue(type: MenuItemType) -> MenuItemValue {
-        var result: MenuItemValue
+    public func makeMenuValue(type: MenuItemType) -> MenuValue {
+        var result: MenuValue
         switch type {
         case .boolean:
             result = Bool(self) ?? false
@@ -54,7 +54,7 @@ extension String: MenuItemValue {
 }
 
 
-extension Bool: MenuItemValue {
+extension Bool: MenuValue {
     
     public func toString() -> String {
         return String(self)

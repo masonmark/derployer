@@ -8,7 +8,7 @@ public class MenuItem: DerpSerializable {
     public var name: String = ""
     
     
-    public var value: MenuItemValue = "" // FIXME should be MenuItemValue?
+    public var value: MenuValue = "" // FIXME should be MenuValue?
     
     
     public var stringValue: String {
@@ -34,7 +34,7 @@ public class MenuItem: DerpSerializable {
         
     }
     
-    public init(_ name: String, value: MenuItemValue = "", validator: MenuItemValidator? = nil, type: MenuItemType = .string, predefinedValues: [String]? = nil) {
+    public init(_ name: String, value: MenuValue = "", validator: MenuItemValidator? = nil, type: MenuItemType = .string, predefinedValues: [String]? = nil) {
         
         self.name      = name
         self.value     = value
@@ -72,8 +72,8 @@ public class MenuItem: DerpSerializable {
     
 //    /// If `string` can be converted for a value type that is appropriate for the reciever (e.g., if the receiver's type is .boolean, then string is "true" or "false" (can be used to init a Bool)), this returns the value. Returns nil if string is invalid for the receiver's type.
 //    
-//    public func makeValueFrom(string: String) -> MenuItemValue? {
-//        // FIXME: delete this in favor of String:MenuItemValue's makeMenuItemValue(type:) ?
+//    public func makeValueFrom(string: String) -> MenuValue? {
+//        // FIXME: delete this in favor of String:MenuValue's makeMenuValue(type:) ?
 //    }
     
     
@@ -105,7 +105,7 @@ public class MenuItem: DerpSerializable {
         guard let valueString = values[k.value] as? String else {
             throw DerpSerializableError.DeserializationFailed("required 'value' value not present")
         }
-        self.value = valueString.makeMenuItemValue(type: self.type)
+        self.value = valueString.makeMenuValue(type: self.type)
         
         if let predefinedValues = values[k.predefinedValues] as? [String] {
             self.predefinedValues = predefinedValues

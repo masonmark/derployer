@@ -35,7 +35,7 @@ public class Menu: MenuInterlocutor {
     public var interface: MenuInterface = DefaultMenuInterface()
     
     /// Allows certain menus to short-circuit the run() process, without actually asking for input.
-    private var preordainedValue: MenuItemValue? = nil
+    private var preordainedValue: MenuValue? = nil
     
     private var menuItem: MenuItem? = nil
     
@@ -184,15 +184,15 @@ public class Menu: MenuInterlocutor {
             let submenu       = Menu(menuItem: itemSelected, interface: interface)
             let submenuResult = submenu.run()
             
-            guard let submenuVal = submenuResult as? MenuItemValue else {
+            guard let submenuVal = submenuResult as? MenuValue else {
                 fatalError("BAD IMPLEMENTATION BRO")
             }
             actualInput = submenuVal.toString()
-            // FIXME: THIS IS NOT GOOD. HOW TO FIX IT IS MAKE Menu.run() return MenuItemValue? I think...
+            // FIXME: THIS IS NOT GOOD. HOW TO FIX IT IS MAKE Menu.run() return MenuValue? I think...
         }
         if menuItem.validate(actualInput) {
             
-            menuItem.value = actualInput.makeMenuItemValue(type: menuItem.type)
+            menuItem.value = actualInput.makeMenuValue(type: menuItem.type)
             let changeMessage = self.messageValueChanged(name: menuItem.name, newValue: menuItem.stringValue)
             self.interface.writeResultsMessage(changeMessage)
             return menuItem.value
