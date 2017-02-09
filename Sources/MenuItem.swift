@@ -72,65 +72,6 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
             }
             return result
         }
-        
-//        
-//        if let message = message {
-//            // FIXME: get rid of this and always run a Menu
-//            // Maybe this run() method should even just return a Menu then (?)
-//            interface.write("\n")
-//            interface.write(message)
-//            interface.write("\n\n")
-//        }
-//        
-//        
-//        if type == .staticValue {
-//            return value
-//        }
-//        
-//        if type == .boolean {
-//            value = !value.boolValue
-//            return value
-//        }
-//        
-//        if type == .userInput {
-//            let menu = Menu(menuItem: self, interface: interface)
-//            guard let result = menu.run() as? MenuItemValue else {
-//                fatalError("FIXME: how should this be handled?")
-//            }
-//            return result
-//        }
-//        
-//        if type == .string || type == .predefined || predefinedValues != nil {
-//            
-//            let menu = Menu(menuItem: self, interface: interface)
-//            
-//            guard let result = menu.run() as? MenuItemValue else {
-//                fatalError("FIXME: how should this be handled?")
-//            }
-//            return result
-//            
-//        }
-//        
-//        let prompt = messageAcceptOrManuallyChangeValue(name: name, value: value.toString())
-//        interface.write(prompt)
-//        let input = interface.read()
-//        
-//        if input == "" {
-//        
-//            interface.write(messageNoChangeMade())
-//            return value
-//        
-//        } else if !validate(input) {
-//            
-//            let warning = messageBadInputPleaseTryAgain(input: input)
-//            return run(interface: interface, message: warning)
-//            
-//        } else {
-//            value = input
-//            let changeMessage = messageValueChanged(name: name, newValue: input)
-//            interface.write(changeMessage)
-//            return value
-//        }
     }
     
     
