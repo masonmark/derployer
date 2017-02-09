@@ -47,24 +47,7 @@ public class MenuItem: DerpSerializable, MenuInterlocutor {
     public convenience init(staticValue: String) {
         self.init(staticValue, value: staticValue, type: .staticValue)
     }
-    
-    /// Run updates the MenuItem's value, and returns it. To "update" the value means something different depending on the type. It might just toggle a boolean flag; it might run a series of menus and interact with the user to build/confirm a more complex value.
-    
-    
-    public func run(interface: MenuInterface, message: String? = nil) -> MenuItemValue {
         
-        
-        switch type {
-            
-        default:
-            let menu = Menu(menuItem: self, interface: interface)
-            guard let result = menu.run(resultsMessage: message) as? MenuItemValue else {
-                fatalError("FIXME: solve this design flaw >:-(")
-            }
-            return result
-        }
-    }
-    
     
     public func validate(_ input: String) -> Bool {
         

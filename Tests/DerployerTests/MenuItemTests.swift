@@ -143,7 +143,8 @@ class MenuItemTests: XCTestCase {
         let interface = TestMenuInterface()
         interface.shouldPrint = true
         
-        _ = bool.run(interface: interface)
+        let menu = Menu(menuItem: bool, interface: interface)
+        _ = menu.run()
         XCTAssertEqual(bool.boolValue, false)
         // running a bool just flips the value
     }
@@ -155,7 +156,8 @@ class MenuItemTests: XCTestCase {
         interface.shouldPrint = true
         
         interface.inputs = ["gone is gone"]
-        _ = string.run(interface: interface)
+        var menu = Menu(menuItem: string, interface: interface)
+        _ = menu.run()
         var expected = [
             string.messageAcceptOrManuallyChangeValue(name: "string", value: "hoge"),
             string.messageValueChanged(name: "string", newValue: "gone is gone\n\n")
@@ -163,7 +165,8 @@ class MenuItemTests: XCTestCase {
         XCTAssertEqual(interface.outputs, expected)
         
         interface = TestMenuInterface()
-        _ = string.run(interface: interface)
+        menu = Menu(menuItem: string, interface: interface)
+        _ = menu.run()
         expected = [
             string.messageAcceptOrManuallyChangeValue(name: "string", value: "gone is gone"),
             string.messageNoChangeMade()

@@ -91,7 +91,7 @@ public class Menu: MenuInterlocutor {
     
     
     
-    /// Returns the result of running the menu. Running the menu means presenting its contents via the menu interface (normally, to allow editing), repeating in a loop, until complete.
+    /// Returns the result of running the menu. Running the menu means presenting its contents via the menu interface (normally, to allow editing), repeating in a loop, until complete. (Some menu item types have preordained results — merely selecting the item does something (e.g. toggle a .boolean, or return the immutable value of a .staticValue typed MenuItem. In those cases, input isn't actually read from the menu interface.)
     
     public func run(resultsMessage: String? = nil) -> Any? {
         
@@ -128,7 +128,6 @@ public class Menu: MenuInterlocutor {
         
         interface.writePrompt(prompt ?? defaultPrompt)
 
-        
         let input = interface.read()
         
         if let handler = inputHandler {
@@ -148,7 +147,9 @@ public class Menu: MenuInterlocutor {
         }
     }
     
+    
     /// The default input processing for when the menu IS NOT a submenu of a MenuItem, so it is processing input for itself (assumption here is that this is a root menu with a list of menu items.
+    
     public func process(input: String) -> Any? {
         
         if input == "" {
@@ -156,8 +157,9 @@ public class Menu: MenuInterlocutor {
             return menuResult
             
         } else if let menuItem = self[input] {
+            let submenu = Menu(menuItem: menuItem, interface: interface)
             
-            _ = menuItem.run(interface:interface)
+            _ = submenu.run()
             // Here we run the menu for the menu item, for its side effect of updating the value of the menu item, but we don't return that value, and instead run the receiver again after doing that. This is sort of surprising, and it is a legacy of my first design of the menu system, which kind of totally sucked balls, so FIXME bro...
         } else {
             interface.write("Sorry, '\(input)' is not something I understand.")
@@ -166,6 +168,7 @@ public class Menu: MenuInterlocutor {
     }
     
     /// The default input processing for when the menu IS a submenu of a MenuItem.
+    
     public func process(input: String, forMenuItem menuItem: MenuItem) -> Any? {
         
         if (input == "") {
@@ -177,7 +180,15 @@ public class Menu: MenuInterlocutor {
         var actualInput = input
         
         if let itemSelected = self[input] {
-            actualInput = itemSelected.run(interface: self.interface).toString() // FIXME :-/
+            
+            let submenu       = Menu(menuItem: itemSelected, interface: interface)
+            let submenuResult = submenu.run()
+            
+            guard let submenuVal = submenuResult as? MenuItemValue else {
+                fatalError("BAD IMPLEMENTATION BRO")
+            }
+            actualInput = submenuVal.toString()
+            // FIXME: THIS IS NOT GOOD. HOW TO FIX IT IS MAKE Menu.run() return MenuItemValue? I think...
         }
         if menuItem.validate(actualInput) {
             
