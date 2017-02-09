@@ -35,16 +35,22 @@ public class Menu: MenuInterlocutor {
     public var interface: MenuInterface = DefaultMenuInterface()
     
     
-    public convenience init(menuItem: MenuItem, title: String? = nil, interface: MenuInterface? = nil) {
+    public init(title: String? = nil, content: [MenuItem]? = nil, interface: MenuInterface? = nil) {
         
-        self.init()
+        self.title = title
+        if let content = content {
+            self.content = content
+        }
         if let interface = interface {
             self.interface = interface
         }
-        if let title = title {
-            self.title = title
-        }
+    }
+    
+    
+    public convenience init(menuItem: MenuItem, title: String? = nil, interface: MenuInterface? = nil) {
         
+        self.init(title: title, interface: interface)
+
         if let predefinedValues = menuItem.predefinedValues {
             for val in predefinedValues {
                 content.append(MenuItem(staticValue: val))
@@ -71,7 +77,6 @@ public class Menu: MenuInterlocutor {
             fatalError("menu init from .staticValue not yet implemented")
 
         case .userInput:
-            content = []
             prompt  = promptManuallyEnterNewValueOrAcceptCurrent(name: menuItem.name, value: menuItem.stringValue)
         }
         
@@ -103,18 +108,6 @@ public class Menu: MenuInterlocutor {
         }
     }
     
-    
-    
-    public init(title: String? = nil, content: [MenuItem]? = nil, interface: MenuInterface? = nil) {
-        
-        self.title = title
-        if let content = content {
-            self.content = content
-        }
-        if let interface = interface {
-            self.interface = interface
-        }
-    }
     
     
     /// Returns the result of running the menu. Running the menu means presenting its contents via the menu interface (normally, to allow editing), repeating in a loop, until complete.
