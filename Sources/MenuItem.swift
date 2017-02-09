@@ -2,7 +2,7 @@
 
 // FIXME?: Mason 2017-02-05: I think what it messy here is that MenuItem and Menu are too conflated and mixed up. Menu should maybe do ALL direct input processing -- and menu items should only process input passed to them from a Menu. (And maybe Menu is the wrong word... :-/ but can't think of anything more apt for "screen-like display of information that accepts some sort of user input for some purpose (perhaps just acknowledgement) )
 
-public class MenuItem: DerpSerializable, MenuInterlocutor {
+public class MenuItem: DerpSerializable {
     
     /// The name of the item (may be an identifier, should probably be unique for most use cases).
     public var name: String = ""

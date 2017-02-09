@@ -159,8 +159,8 @@ class MenuItemTests: XCTestCase {
         var menu = Menu(menuItem: string, interface: interface)
         _ = menu.run()
         var expected = [
-            string.messageAcceptOrManuallyChangeValue(name: "string", value: "hoge"),
-            string.messageValueChanged(name: "string", newValue: "gone is gone\n\n")
+            menu.messageAcceptOrManuallyChangeValue(name: "string", value: "hoge"),
+            menu.messageValueChanged(name: "string", newValue: "gone is gone\n\n")
         ]
         XCTAssertEqual(interface.outputs, expected)
         
@@ -168,8 +168,8 @@ class MenuItemTests: XCTestCase {
         menu = Menu(menuItem: string, interface: interface)
         _ = menu.run()
         expected = [
-            string.messageAcceptOrManuallyChangeValue(name: "string", value: "gone is gone"),
-            string.messageNoChangeMade()
+            menu.messageAcceptOrManuallyChangeValue(name: "string", value: "gone is gone"),
+            menu.messageNoChangeMade()
         ]
         XCTAssertEqual(interface.outputs, expected)
     }

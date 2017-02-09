@@ -49,7 +49,4 @@ extension MenuInterlocutor {
     public func promptManuallyEnterNewValueOrAcceptCurrent(name: String, value: String) -> String {
         return "\(name): Enter a new value, or press ↩︎ to accept current value (\(value)):\(inputPrompt)"
     }
-
 }
-
-
