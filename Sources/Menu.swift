@@ -1,24 +1,9 @@
 // Menu.swift Created by mason on 2017-01-20.
 
 
-/// Menu manages a collection of values, presenting a text UI and running a user input loop until the user accepts the results. Menus are configured, then executed with `run()`, which returns the menu's result. 
+/// Menu manages a value, or a collection of values, presenting a text UI and running a user input loop until the user accepts the results. Menus are configured, then executed with `run()`, which returns the menu's result.
 ///
 /// Simple named-value lists can be managed by default, and Menu can be extended (via custom initializers and custom MenuResultBuilder closures) to manage other kinds of data.
-
-/*
- 
- NOTES:
- 
- Menus:
- - do UI and return a list of named values
- - do UI return a single value
- - just do UI, optionally doing some action, and return nothing
- 
- What I don't like is how the Menu class also *manages* the state of this list of named values. Somebody else should do the managing and just let Menu deal with the UI I/O....
- 
- And I don't like how MenuItem 
- 
- */
 
 public class Menu: MenuInterlocutor {
     
@@ -26,7 +11,7 @@ public class Menu: MenuInterlocutor {
     
     public var headers: [String] = []
     
-    public var content: [MenuItem] = []
+    public var content: MenuItemList = MenuItemList()
     
     public var footers: [String] = []
 
@@ -40,7 +25,7 @@ public class Menu: MenuInterlocutor {
     private var menuItem: MenuItem? = nil
     
     
-    public init(title: String? = nil, content: [MenuItem]? = nil, interface: MenuInterface? = nil) {
+    public init(title: String? = nil, content: MenuItemList? = nil, interface: MenuInterface? = nil) {
         
         self.title = title
         if let content = content {
@@ -93,7 +78,7 @@ public class Menu: MenuInterlocutor {
     
     /// Returns the result of running the menu. Running the menu means presenting its contents via the menu interface (normally, to allow editing), repeating in a loop, until complete. (Some menu item types have preordained results — merely selecting the item does something (e.g. toggle a .boolean, or return the immutable value of a .staticValue typed MenuItem. In those cases, input isn't actually read from the menu interface.)
     
-    public func run(resultsMessage: String? = nil) -> Any? {
+    public func run(resultsMessage: String? = nil) -> MenuValue? {
         
         if let resultsMessage = resultsMessage {
             interface.writeResultsMessage(resultsMessage)
@@ -109,7 +94,7 @@ public class Menu: MenuInterlocutor {
         
         if content.count > 0 {
             // test to avoid writing useless "" which impairs testability
-            interface.writeContent(content)
+            interface.writeContent(content.menuItems)
         }
         
         for footer in footers {
@@ -150,11 +135,17 @@ public class Menu: MenuInterlocutor {
     
     /// The default input processing for when the menu IS NOT a submenu of a MenuItem, so it is processing input for itself (assumption here is that this is a root menu with a list of menu items.
     
-    public func process(input: String) -> Any? {
+    public func process(input: String) -> MenuValue? {
         
         if input == "" {
             
-            return menuResult
+            /// By default, a menu's result is just the `content` property (a MenuItemList, which can be used as a list of named values). For a simple list of values, that's easy to work with. However, in some cases it's convenient to make a Menu instance smart enough to return some kind of arbitrary object. A way to do that is to set the `resultBuilder` property to a custom routine (and a convenient place to do that would be your custom initializer that knows how to init with that same type of object). (Your object's type will also need to conform to MenuValue.)
+
+            if let builder = resultBuilder {
+                return builder(self)
+            } else {
+                return content
+            }
             
         } else if let menuItem = self[input] {
             let submenu = Menu(menuItem: menuItem, interface: interface)
@@ -169,7 +160,7 @@ public class Menu: MenuInterlocutor {
     
     /// The default input processing for when the menu IS a submenu of a MenuItem.
     
-    public func process(input: String, forMenuItem menuItem: MenuItem) -> Any? {
+    public func process(input: String, forMenuItem menuItem: MenuItem) -> MenuValue? {
         
         if (input == "") {
             // So far, at least, this always means "no change".
@@ -184,7 +175,7 @@ public class Menu: MenuInterlocutor {
             let submenu       = Menu(menuItem: itemSelected, interface: interface)
             let submenuResult = submenu.run()
             
-            guard let submenuVal = submenuResult as? MenuValue else {
+            guard let submenuVal = submenuResult else {
                 fatalError("BAD IMPLEMENTATION BRO")
             }
             actualInput = submenuVal.toString()
@@ -206,38 +197,14 @@ public class Menu: MenuInterlocutor {
     
     public var inputHandler: MenuInputHandler? = nil
     
-    
-
-    /// By default, a menu's result is just the `values` dictionary. Those are always Strings, and easy to work with. However, in some cases it's convenient to make a Menu instance smart enough to return some kind of arbitrary object. A way to do that is to set the `menuResult` property to a custom routine (and a convenient place to do that would be your custom initializer that knows how to init with that same type of object).
-
-    public var menuResult: Any? {
-        
-        if let builder = resultBuilder {
-            return builder(self)
-        } else {
-            return values
-        }
-    }
-    
-    
     public var resultBuilder: MenuResultBuilder? = nil
-    
- 
-    /// Returns a dictionary of named values, representing the current contents of the menu. By default, this object is the result returned by `run()` (although that can be overridden by setting the `resultBuilder` property.
-    
-    public var values: [String:String] {
-        
-        var result: [String:String] = [:]
-        for menuItem in content {
-            result[menuItem.name] = menuItem.value.toString()
-        }
-        return result;
-    }
     
     
     /// Returns the corresponding MenuItem instance if `selection` is a number that is one of the menu's choices, otherwise nil.
     
     public subscript(selection: String) -> MenuItem? {
+        
+        // FIXME: Mason 2017-02-12: It's noted in a couple of the tests, but this shoudl be extended to allow myMenu["foo"] (look up menu item via its string name)
         
         guard let number = Int(selection) else {
             return nil
@@ -245,7 +212,7 @@ public class Menu: MenuInterlocutor {
         guard number > 0 && number <= content.count else {
             return nil
         }
-        return content[number - 1]
+        return content.menuItems[number - 1]
     }
     
     
@@ -260,43 +227,8 @@ public class Menu: MenuInterlocutor {
 
 /// Type for Menu's `resultBuilder` property; it converts a menu('s values) into some arbitrary object.
 
-public typealias MenuResultBuilder = ((Menu)->Any)
+public typealias MenuResultBuilder = ((Menu)->MenuValue)
 
 /// Type for Menu's `inputHandler` property; it takes over all input-handling responsibilities A return value of nil indicates that the menu should reject the input and run again. Any non-nil return value becomes the menu's result.
 
-public typealias MenuInputHandler = ((_ input: String, _ menu: Menu)->Any?)
-
-
-extension Menu {
-    
-    /// Initializes a Menu instance from a TargetHostValues instance.
-    
-    public convenience init(targetHostValues: TargetHostValues) {
-    
-        self.init()
-        self.title = "TARGET HOST VALUES:"
-        
-        self.headers = [
-            "The target host values specify the machine to be configured."
-        ]
-        
-        // Just for fun, I am gonna validate the SSH port here. 
-        let sshPortValidator: MenuItemValidator = { stringValue in
-            let result = Int(stringValue) != nil
-            print("SSH port validator result: \(result)")
-            return result
-        }
-        
-        self.content = [
-            MenuItem("hostname", value: targetHostValues.hostname),
-            MenuItem("sshPort", value: targetHostValues.sshPort, validator: sshPortValidator),
-            MenuItem("username", value: targetHostValues.username),
-            MenuItem("sshKeyPath", value: targetHostValues.sshKeyPath),
-        ]
-        
-        self.resultBuilder = { menu in
-            let v = self.values
-            return TargetHostValues(hostname: v["hostname"], username: v["username"], sshPort: v["sshPort"], sshKeyPath: v["sshKeyPath"])
-        }
-    }
-}
+public typealias MenuInputHandler = ((_ input: String, _ menu: Menu)->MenuValue?)

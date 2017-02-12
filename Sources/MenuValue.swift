@@ -42,6 +42,7 @@ extension String: MenuValue {
     
     
     public func makeMenuValue(type: MenuItemType) -> MenuValue {
+        
         var result: MenuValue
         switch type {
         case .boolean:
@@ -71,7 +72,10 @@ extension Bool: MenuValue {
 }
 
 
-// MASON 2017-02-07: This is still experimental.... not doing this yet:
+// MASON 2017-02-07: This is still experimental.... not doing this yet. Oh update, I found out this doesn't 
+// actually work anyway; it DOES work to extend Array/Dictionary where they match the constraints, but it 
+// DOES NOT work to inform the compiler that such objects conform to MenuValue... at least not any way I could
+// figure out. So I give up to extend generic types, and will just implement a wrapper type. (Done; it's MenuItemList.)
 //
 //extension Array where Element == MenuItem {
 //    // Above line's syntax intro'd in Swift 3.1: http://stackoverflow.com/a/40214792/164017
@@ -80,6 +84,40 @@ extension Bool: MenuValue {
 //        return "hhoop"
 //    }
 //    mutating func takeValue(string: String) -> Bool {
+//        return true
+//    }
+//}
+//extension Dictionary where Key == String, Value == String  {
+//
+//    public func toString() -> String {
+//        // hack for now just to see if this even works!
+//        do {
+//            let stringData = try JSONSerialization.data(withJSONObject: self, options: .prettyPrinted)
+//            if let string = String(data: stringData, encoding: .utf8){
+//                return string
+//            }
+//        } catch _ {
+//
+//        }
+//        return ""
+//    }
+//
+//
+//    public mutating func updateFrom(string: String) -> Bool {
+//
+//        guard let jsonData = string.data(using: .utf8) else {
+//            return false
+//        }
+//        guard let obj = try? JSONSerialization.jsonObject(with: jsonData, options: []) else {
+//            return false
+//        }
+//        guard let other = obj as? [String:String] else {
+//            return false
+//        }
+//        removeAll(keepingCapacity: true)
+//        for (k, v) in other {
+//            self[k] = v
+//        }
 //        return true
 //    }
 //}

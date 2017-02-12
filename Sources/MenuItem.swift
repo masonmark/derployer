@@ -8,7 +8,7 @@ public class MenuItem: DerpSerializable {
     public var name: String = ""
     
     
-    public var value: MenuValue = "" // FIXME should be MenuValue?
+    public var value: MenuValue = ""
     
     
     public var stringValue: String {
