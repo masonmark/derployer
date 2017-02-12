@@ -17,10 +17,25 @@ class MenuTests: XCTestCase {
         menu.interface = menuInterface
     }
 
+    //    func test_fuck_Mason_your_initial_design_was_WRONG() {
+    //        
+    //        menu.content = [
+    //            MenuItem("no", value: false),       // .boolean
+    //            MenuItem("yes", value: 5),          // .integer
+    //            MenuItem("name", value: "Roger"),   // .string
+    //            MenuItem("drinks", predefinedValues: ["coffee", "tea", "milk"]), // .predefined
+    //            
+    //        ]
+    //        
+    //        
+    //        
+    //    }
+    // MASON 2017-02-07: someday I want to change my design mistake where MenuItem's value is String....
     
+        
     func test_basic_presentation() {
         
-        menu.content = [
+        menu.content.menuItems = [
             MenuItem("foo", value: "bar"),
             MenuItem("baz", value: "ホゲ")
         ]
@@ -75,19 +90,21 @@ class MenuTests: XCTestCase {
             "foo" : "#assclownPOTUS",
             "baz" : "💩"
         ]
-        
-        XCTAssertEqual(expected, menu.values)
-        
+        for (k,v) in expected {
+            XCTAssertEqual(menu.content[k]?.stringValue, v)
+            // Mason 2017-02-12: This kind of subscripting isn't yet implemented in Menu: XCTAssertEqual(menu[k]?.stringValue as? String, v)
+        }
     }
+    
     
     func test_subscript() {
         
-        menu.content = [
+        menu.content.menuItems = [
             MenuItem("foo", value: "bar"),
             MenuItem("baz", value: "ホゲ")
         ]
-        XCTAssertEqual(menu["1"]?.value, "bar")
-        XCTAssertEqual(menu["2"]?.value, "ホゲ")
+        XCTAssertEqual(menu["1"]?.stringValue, "bar")
+        XCTAssertEqual(menu["2"]?.stringValue, "ホゲ")
         XCTAssertNil(menu["nonexistent"])
         XCTAssertNil(menu["666"])
         
@@ -143,23 +160,25 @@ class MenuTests: XCTestCase {
         ]
         let phase = DeployPhase(menuItems: values)
         
-        let menu = Menu(deployPhase: phase)
+        let menu = Menu(list: phase)
         
-        XCTAssert(menu.content.count == 2);
-        XCTAssert(menu.content[safe: 0]?.value == "bar");
-        XCTAssert(menu.content[safe: 1]?.value == "hoge");
+        XCTAssert(menu.content.menuItems.count == 2);
+        XCTAssert(menu.content.menuItems[safe: 0]?.stringValue == "bar");
+        XCTAssert(menu.content.menuItems[safe: 1]?.stringValue == "hoge");
         
         menu.interface = TestMenuInterface(inputs: ["1", "ass", "2", "hat", ""])
-        guard let result = menu.run() as? [String:String]  else {
+        guard let result = menu.run() as? DeployPhase  else {
             // no custom return type for this case
             XCTFail("bad return value type");
             return;
         }
         print(result)
         
-        XCTAssert(result["foo"]  == "ass")
-        XCTAssert(result["hoge"] == "hat")
+        XCTAssert(result["foo"]?.stringValue  == "ass")
+        XCTAssert(result["hoge"]?.stringValue == "hat")
     }
+    
+    
 }
 
 
