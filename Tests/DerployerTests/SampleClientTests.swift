@@ -17,7 +17,7 @@ class SampleClientTests: XCTestCase {
             phaseTwoDeployValues
         ]
         
-       derp.run()
+       // derp.run()
         
     }
     
