@@ -59,13 +59,13 @@ public extension DerpSerializable {
         guard let serializationValues = try? serialize() else {
             fatalError("\(self): JSON encode error: serialize() failed")
         }
-        
+
         //        do {
-        //            let result = try JSONSerialization.data(withJSONObject: serializationValues, options: .prettyPrinted)
+        //            _ = try JSONSerialization.data(withJSONObject: serializationValues, options: .prettyPrinted)
         //        } catch {
         //            print("\(self): JSON encode error: \(error) | source values: \(serializationValues)")
         //        }
-        // Mason 2017-01-29: Swift 3.0.2 fails below on Linux; the above was an attempt to print the actual error thrown by NSJSONSerialization. However, when the above code is not commented out, the "swift test" run just abruptly exits before printing anything. Swift 3.1 is fairly imminent, so not trying to debug this for now...
+        // Mason 2017-01-29: The above was an attempt to print the actual error thrown by NSJSONSerialization. However, when the above code is not commented out, the "swift test" run just abruptly exits before printing anything. Swift 3.1 is fairly imminent, so not trying to debug this for now... UPDATE 2017-02-13: it still fails the same way on Swift swift-3.1-DEVELOPMENT-SNAPSHOT-2017-02-11-a-ubuntu16.04
         ///
         // fatal error: Derployer.DerpValList: JSON encode error: cannot encode source values: ["values": Optional([["type": Optional("boolean"), "identifier": Optional("a bool"), "value": Optional(true), "helpInfo": nil, "predefinedValues": nil], ["type": Optional("predefined"), "identifier": Optional("only certain values"), "value": Optional("5"), "helpInfo": nil, "predefinedValues": Optional(["5", "🍜"])], ["type": Optional("string"), "identifier": Optional("anything allowed"), "value": Optional("5"), "helpInfo": nil, "predefinedValues": Optional(["apple", "banana", "cherry"])]])]: file /mnt/hgfs/Derployer/Sources/DerpSerializable.swift, line 67
 
