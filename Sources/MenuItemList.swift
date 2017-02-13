@@ -7,10 +7,10 @@ import Foundation
 public class MenuItemList: DerpSerializable, MenuValue /* , ExpressibleByArrayLiteral*/ {
     
     
-    var title = "Untitled List"
+    public var title = "Untitled List"
     
     
-    var menuItems: [MenuItem] = []
+    public var menuItems: [MenuItem] = []
 
     
     required public init() {
@@ -61,7 +61,7 @@ public class MenuItemList: DerpSerializable, MenuValue /* , ExpressibleByArrayLi
     }
     
     
-    subscript(key: String) -> MenuItem? {
+    public subscript(key: String) -> MenuItem? {
         
         get {
             for x in menuItems {
@@ -74,12 +74,12 @@ public class MenuItemList: DerpSerializable, MenuValue /* , ExpressibleByArrayLi
     }
     
     
-    var count: Int {
+    public var count: Int {
         return menuItems.count
     }
     
     
-    func append(_ item: MenuItem) {
+    public func append(_ item: MenuItem) {
         menuItems.append(item)
     }
     

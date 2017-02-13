@@ -25,7 +25,7 @@ public class TargetHostValues: MenuItemList {
         ]
     }
     
-    convenience init(hostname: String? = nil, username: String? = nil, sshPort: String? = nil, sshKeyPath: String? = nil) {
+    public convenience init(hostname: String? = nil, username: String? = nil, sshPort: String? = nil, sshKeyPath: String? = nil) {
         
         self.init()
         
@@ -43,7 +43,7 @@ public class TargetHostValues: MenuItemList {
         }
     }
     
-    var hostname: String {
+    public var hostname: String {
         get {
             guard let item = self["hostname"] else {
                 return "ERROR: NO HOSTNAME VALUE EXISTS"
@@ -66,7 +66,7 @@ public class TargetHostValues: MenuItemList {
     }
     
     
-    var username: String {
+    public var username: String {
         get {
             guard let item = self["username"] else {
                 return "ERROR: NO username VALUE EXISTS"
@@ -89,7 +89,7 @@ public class TargetHostValues: MenuItemList {
     }
     
     
-    var sshPort: String {
+    public var sshPort: String {
         get {
             guard let item = self["sshPort"] else {
                 return "ERROR: NO sshPort VALUE EXISTS"
@@ -112,7 +112,7 @@ public class TargetHostValues: MenuItemList {
     }
     
     
-    var sshKeyPath: String {
+    public var sshKeyPath: String {
         get {
             guard let item = self["sshKeyPath"] else {
                 return "ERROR: NO sshKeyPath VALUE EXISTS"

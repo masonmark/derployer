@@ -3,7 +3,7 @@
 import XCTest
 @testable import Derployer
 
-class TargetHostValuesTests: XCTestCase {
+public class TargetHostValuesTests: XCTestCase {
     
     func test_basic() {
         

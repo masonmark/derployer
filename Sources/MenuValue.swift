@@ -18,7 +18,7 @@ public protocol MenuValue {
 
 extension MenuValue {
     
-    var boolValue: Bool {
+    public var boolValue: Bool {
         guard let val = self as? Bool else {
             return false
         }
