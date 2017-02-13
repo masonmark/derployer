@@ -29,8 +29,12 @@ class DerpSerializableTests: TestCase  {
     func test_JSONString() {
         
         let jsonString = obj.JSON
-        XCTAssert(jsonString.contains("\"state\" : \"happy\""))
-        XCTAssert(jsonString.contains("\"color\" : \"brown\""))
+        
+        print(jsonString)
+        // Mason 2017-02-13: On Linux vs macOS, whitespace is different.
+        
+        XCTAssert(jsonString.contains("\"state\":\"happy\""))
+        XCTAssert(jsonString.contains("\"color\":\"brown\""))
           // Weak test; we can't do a full string comparison because order of keys in JSON is undefined.
     }
     

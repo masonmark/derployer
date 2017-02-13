@@ -70,8 +70,9 @@ public extension DerpSerializable {
         // fatal error: Derployer.DerpValList: JSON encode error: cannot encode source values: ["values": Optional([["type": Optional("boolean"), "identifier": Optional("a bool"), "value": Optional(true), "helpInfo": nil, "predefinedValues": nil], ["type": Optional("predefined"), "identifier": Optional("only certain values"), "value": Optional("5"), "helpInfo": nil, "predefinedValues": Optional(["5", "🍜"])], ["type": Optional("string"), "identifier": Optional("anything allowed"), "value": Optional("5"), "helpInfo": nil, "predefinedValues": Optional(["apple", "banana", "cherry"])]])]: file /mnt/hgfs/Derployer/Sources/DerpSerializable.swift, line 67
 
         
-        guard let result = try? JSONSerialization.data(withJSONObject: serializationValues, options: .prettyPrinted) else {
-            
+        guard let result = try? JSONSerialization.data(withJSONObject: serializationValues, options: []) else {
+            // Mason 2017-02-13: On Linux vs macOS, whitespace in generated JSON is different. Therefore, use `options: []` which is documented to produce the most compact possible JSON — this makes it a lot easier to write tests.
+
             fatalError("\(self): JSON encode error: cannot encode source values: \(serializationValues)")
         }
         return result
