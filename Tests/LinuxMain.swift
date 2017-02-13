@@ -11,7 +11,6 @@ XCTMain([
     testCase(DeployPhaseTests.allTests),
     testCase(MenuInterfaceTests.allTests),
     testCase(MenuTests.allTests),
-    testCase(TaskWrapperTests.allTests),
     testCase(TargetHostValuesTests.allTests),
     testCase(SampleClientTests.allTests),
 ])
