@@ -17,7 +17,21 @@ class SampleClientTests: XCTestCase {
             phaseTwoDeployValues
         ]
         
-       // derp.run()
+        derp.run()
+        
+        do {
+            print("OBJECT VALUES:")
+            print("\(try derp.targetHostValues.serialize())")
+            print("\(try derp.deployPhases[0].serialize())")
+            print("\(try derp.deployPhases[1].serialize())")
+
+            print("JSON:")
+            print("\(derp.targetHostValues.JSON)")
+            print("\(derp.deployPhases[0].JSON)")
+            print("\(derp.deployPhases[1].JSON)")
+        } catch {
+            print("RED 🐞 ALERT: FUBAR OCCURRED: ", error)
+        }
         
     }
     
