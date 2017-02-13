@@ -41,7 +41,7 @@ public class MenuItemList: DerpSerializable, MenuValue /* , ExpressibleByArrayLi
     
     public func deserialize(_ values: DerpSerializationValues) throws {
         
-        guard let a = values[SerializationKeys.values] as? [[String: Any?]] else {
+        guard let a = values[SerializationKeys.values] as? [[String: Any]] else {
             throw DerpSerializableError.DeserializationFailed("invalid data: no 'values' found at top level")
         }
         

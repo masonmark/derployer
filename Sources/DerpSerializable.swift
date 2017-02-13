@@ -24,7 +24,7 @@ public enum DerpSerializableError: Error {
 }
 
 
-public typealias DerpSerializationValues = [String:Any?]
+public typealias DerpSerializationValues = [String:Any]
 
 
 public extension DerpSerializable {

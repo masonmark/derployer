@@ -41,10 +41,8 @@ public class Menu: MenuInterlocutor {
         
         self.init(title: title, interface: interface)
 
-        if let predefinedValues = menuItem.predefinedValues {
-            for val in predefinedValues {
-                content.append(MenuItem(staticValue: val))
-            }
+        for val in menuItem.predefinedValues {
+            content.append(MenuItem(staticValue: val))
         }
         
         self.menuItem = menuItem

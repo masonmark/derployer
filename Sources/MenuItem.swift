@@ -27,14 +27,14 @@ public class MenuItem: DerpSerializable {
     public var type: MenuItemType = .string
     
     
-    public var predefinedValues: [String]? = nil
+    public var predefinedValues: [String] = []
     
     
     public required init() {
         
     }
     
-    public init(_ name: String, value: MenuValue = "", validator: MenuItemValidator? = nil, type: MenuItemType = .string, predefinedValues: [String]? = nil) {
+    public init(_ name: String, value: MenuValue = "", validator: MenuItemValidator? = nil, type: MenuItemType = .string, predefinedValues: [String] = []) {
         
         self.name      = name
         self.value     = value
@@ -58,10 +58,10 @@ public class MenuItem: DerpSerializable {
             return Bool(input) != nil
         
         } else if type == .predefined {
-            guard let allowed = predefinedValues else {
+            guard predefinedValues.count > 0 else {
                 return false
             }
-            return allowed.contains(input)
+            return predefinedValues.contains(input)
         
         } else if type == .staticValue {
             return input == value.toString()
